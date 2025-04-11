@@ -32,7 +32,7 @@
 ##   change folder structure, change CPCT_PATH value for its absolute path.
 ##
 THIS_FILE_PATH := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-CPCT_PATH      := /build/retro/projects/mytools/cpctelera-linux-cpc
+CPCT_PATH      := /build/retro/projects/mytools/cpctelera-linux-cpc/cpctelera
 
 ####
 ## SECTION 1: Project configuration 
