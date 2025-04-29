@@ -4,7 +4,7 @@
 
 This repository provides a Docker-based build environment for [CPCtelera](https://github.com/lronaldo/cpctelera), a C development framework for the Amstrad CPC home computer.
 
-The primary goal is to offer a consistent and isolated build environment that works across different host operating systems, specifically addressing potential build issues encountered on platforms like macOS with Apple Silicon.
+The primary goal is to offer a consistent and isolated build environment that works across different host operating systems, including native support for both x86_64 (amd64) and arm64 (Apple Silicon) architectures via a multi-architecture Docker image.
 
 This example focuses on building the `platformClimber` game, originally found in the CPCtelera examples, but the Docker image can be used to build other CPCtelera projects.
 
@@ -14,15 +14,14 @@ This example focuses on building the `platformClimber` game, originally found in
 
 ## Using the Pre-built Docker Image
 
-Pre-built Docker images are available on Docker Hub:
-*   `braxpix/cpctelera-build-x86_64-cpc` (for x86_64 / amd64 systems)
-*   `braxpix/cpctelera-build-arm64-cpc` (for arm64 / aarch64 systems, like Apple Silicon Macs)
+A pre-built multi-architecture Docker image is available on Docker Hub:
+*   `braxpix/cpctelera-build-cpc` (Supports `linux/amd64` and `linux/arm64`)
 
-You can also use the build script (`docker/build_and_upload.sh`) locally to build an image for your specific architecture if needed.
+You can use tags like `braxpix/cpctelera-build-cpc:latest` or `braxpix/cpctelera-build-cpc:1.0`.
 
 ## Running a Build
 
-To build the `platformClimber` example project using the pre-built Docker image, on macOS with silicon chip, run the following command:
+To build the `platformClimber` example project using the pre-built Docker image, run the following command from the root of this repository:
 
 ```bash
 docker run -it --rm \
@@ -32,14 +31,10 @@ docker run -it --rm \
     -e BUILD_SCRIPT=/build/retro/projects/platformClimber/build.sh \
     -e BUILD_PLATFORM=cpc \
     -v "$(pwd)":/tmp/CPC \
-    braxpix/cpctelera-build-arm64-cpc:1.0
+    braxpix/cpctelera-build-cpc:latest
 ```
 
-If you want to run on amd64 architecture, use:
-
-```
-braxpix/cpctelera-build-x86_64-cpc:1.0
-```
+Docker will automatically detect your system's architecture (amd64 or arm64) and pull the appropriate image layers.
 
 **Explanation of the `docker run` command:**
 
@@ -49,7 +44,7 @@ braxpix/cpctelera-build-x86_64-cpc:1.0
     *   `BUILD_PLATFORM`: Specifies the target platform for CPCtelera (e.g., `cpc`). Defaults to `cpc` if not set. Currently only `cpc` platform is supported but there are plans to support other Z80 platforms. This variable is used to export `CPCT_PATH` variable to point to correct path with pre-built cpctelera and to extend `PATH` to make correct cpctelera tools visible.
 
 *   Build Output:
-    *   After the container runs successfully, the compiled game disk image (`.dsk` file) will be available in the current folder since docker mounts `/tmp/CPC` here and this is also where build script will copy the build result to.
+    *   After the container runs successfully, the compiled game disk image (`.dsk` file) will be available in the current folder since docker mounts `/tmp/CPC` there and this is also where build script will copy the build result to.
 
 ## Repository Structure
 
@@ -58,16 +53,15 @@ braxpix/cpctelera-build-x86_64-cpc:1.0
     *   `build.sh`: Simple script to run `make` and copy the output (`.dsk`) to `/tmp/CPC`. This is executed by the Docker container.
     *   Other source is copied from [cpctelera example](https://github.com/lronaldo/cpctelera/tree/development/examples/games/platformClimber)
 *   `docker/`: Contains files related to the Docker image creation.
-    *   `Dockerfile.cpc`: Instructions to build the Docker image for `cpc` platform, including installing dependencies. All is done in 2 stages: build (used to build cpctelera) and run stage (used to actually build your own cpctelera project).
+    *   `Dockerfile.cpc`: Instructions to build the multi-architecture Docker image for `cpc` platform, including installing dependencies. All is done in 2 stages: build (used to build cpctelera) and run stage (used to actually build your own cpctelera project).
     *   `entrypoint.sh`: The script that runs when the container starts. It sets up environment variables, optionally clones a Git repo, and executes the specified `BUILD_SCRIPT`.
-    *   `build_and_upload.sh`: A helper script to build the Docker image and push it to Docker Hub.
-*   `.github/workflows/docker-build-push.yml`: GitHub Actions workflow to automatically build and push the Docker image.
+*   `.github/workflows/docker-build-push.yml`: GitHub Actions workflow to automatically build and push the multi-architecture Docker image to Docker Hub.
 
 ## GitHub Actions
 
-This repository includes a GitHub Actions workflow defined in `.github/workflows/docker-build-push.yml` which can be used to build and push docker image.
+This repository includes a GitHub Actions workflow defined in `.github/workflows/docker-build-push.yml` which automatically builds the multi-architecture (`linux/amd64`, `linux/arm64`) Docker image and pushes it to Docker Hub whenever changes are pushed to the `main` branch, or when manually triggered.
 
-Note that you must set repository variables `DOCKERHUB_USERNAME` and `DOCKERHUB_PASSWORD`.
+Note that we must set repository variables `DOCKERHUB_USERNAME` and `DOCKERHUB_PASSWORD` in your GitHub repository settings for the login and push to Docker Hub to succeed.
 
 ## Notes
 
