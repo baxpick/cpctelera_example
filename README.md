@@ -52,5 +52,28 @@ docker run -it --rm \
     *   `entrypoint.sh`: The script that runs when the container starts. It sets up environment variables, optionally clones a Git repo, and executes the specified `BUILD_SCRIPT`.
     *   `build_and_upload.sh`: A helper script to build the Docker image and push it to Docker Hub.
 
+## Notes
 
+These are runtime packages installed in final image:
 
+```docker
+# Install runtime dependencies only
+RUN apk add --no-cache \
+    bash \
+    perl \
+    dos2unix \
+    grep \
+    coreutils \
+    make \
+    freeimage-dev \
+    bc \
+    util-linux \
+    graphicsmagick \
+    xxd \
+    python3 \
+    jq \
+    git \
+    file
+```
+
+Some of those are needed for cpctelera at runtime but some are just convenient for me. Feel free to update this list to make your image smaller or to add packages needed for building your cpctelera project.
