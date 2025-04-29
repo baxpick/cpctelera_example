@@ -54,7 +54,7 @@ docker run -it --rm \
 
 ## Notes
 
-These are runtime packages installed in final image:
+1. These are runtime packages installed in final image:
 
 ```docker
 # Install runtime dependencies only
@@ -77,3 +77,9 @@ RUN apk add --no-cache \
 ```
 
 Some of those are needed for cpctelera at runtime but some are just convenient for me. Feel free to update this list to make your image smaller or to add packages needed for building your cpctelera project.
+
+2. `development` branch is used when cloning cpctelera as it contains many useful stuff so if you need other branch (there have been braking changes between branches) you should update this in Dockerfile:
+
+```docker
+git clone -b BRANCH_YOU_NEED https://github.com/lronaldo/cpctelera
+```
