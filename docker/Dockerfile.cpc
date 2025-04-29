@@ -24,7 +24,7 @@ RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/ap
         mono@testing mono-dev@testing \
         patch \
         gettext-static \
-        musl-dev
+        musl-dev 
 
 # prepare cpctelera source for CPC
 RUN cd "${MYTOOLS}" && \
@@ -97,7 +97,8 @@ RUN apk add --no-cache \
     xxd \
     python3 \
     jq \
-    git
+    git \
+    file
 
 # Minimize image even more
 RUN rm -rf /var/cache/apk/*
