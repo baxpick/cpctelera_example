@@ -13,18 +13,29 @@ ENV MYTOOLS="${FOLDER_ROOT}/retro/projects/mytools"
 RUN mkdir -p "${MYTOOLS}"
 
 # Install necessary packages (for cpctelera)
-RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
-    apk update && \
+RUN \
+    ARCH=$(arch) && \
+    if [[ ${ARCH} == "aarch64" ]] || [[ ${ARCH} == "arm64" ]]; then \
+        echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+        apk update && \
+        apk add --no-cache mono@testing mono-dev@testing; \
+    elif [[ ${ARCH} == "x86_64" ]] || [[ ${ARCH} == "amd64" ]]; then \
+        echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
+        apk update && \
+        apk add --no-cache mono@community mono-dev@community; \
+    else \
+        echo "ERROR: Unsupported architecture: ${ARCH}" && \
+        exit 1; \
+    fi && \
     apk add --no-cache \
         bash \
         git wget zip \
         g++ make curl \
         bison flex boost-dev freeimage-dev \
         bc util-linux graphicsmagick xxd python3 jq mesa-dev gettext-dev \
-        mono@testing mono-dev@testing \
         patch \
         gettext-static \
-        musl-dev 
+        musl-dev
 
 # prepare cpctelera source for CPC
 RUN cd "${MYTOOLS}" && \
