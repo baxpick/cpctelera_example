@@ -34,6 +34,28 @@ if [[ -n "${GIT_ROOT}" ]] && [[ -n "${GIT_ROOT_CREDS}" ]] && [[ -n "${GIT_PROJEC
     echo "Repository cloned and files copied successfully"
 fi
 
+# Set up environment variables
+PLATFORM="cpc"
+if [[ "${BUILD_PLATFORM}" != "" ]]; then
+    echo "Setting up environment for platform: ${BUILD_PLATFORM}"
+    PLATFORM=${BUILD_PLATFORM}
+else
+    echo "No platform specified. Defaulting to 'cpc'."
+fi
+export MYTOOLS="/build/retro/projects/mytools"
+export CPCT_PATH="${MYTOOLS}/cpctelera-linux-${PLATFORM}/cpctelera"
+export PATH=${PATH}:${CPCT_PATH}/tools/sdcc-3.6.8-r9946/bin
+export PATH=${PATH}:${CPCT_PATH}/tools/2cdt/bin
+export PATH=${PATH}:${CPCT_PATH}/tools/cpc2cdt/bin
+export PATH=${PATH}:${CPCT_PATH}/tools/dskgen/bin
+export PATH=${PATH}:${CPCT_PATH}/tools/hex2bin-2.0/bin
+export PATH=${PATH}:${CPCT_PATH}/tools/iDSK-0.13/bin
+export PATH=${PATH}:${CPCT_PATH}/tools/img2cpc/bin
+export PATH=${PATH}:${CPCT_PATH}/tools/rgas-1.2.2
+export PATH=${PATH}:${CPCT_PATH}/tools/winape
+export PATH=${PATH}:${CPCT_PATH}/tools/zx7b/bin
+export PATH=${PATH}:${CPCT_PATH}/tools/scripts
+
 # Run build script if provided
 if [[ -n "${BUILD_SCRIPT}" && -f "${BUILD_SCRIPT}" ]]; then
     echo "Running custom build script: ${BUILD_SCRIPT}"
