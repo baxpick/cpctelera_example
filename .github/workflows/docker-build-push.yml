@@ -8,20 +8,37 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Required for pushing to Docker Hub
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4 # Checks out your repository under $GITHUB_WORKSPACE
+      uses: actions/checkout@v4
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3 # Needed for multi-arch builds on a single runner
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Run build and upload script
-      env:
-        DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }} # Use repository variable for username
-        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }} # Use repository secret for password
-      run: |
-        cd docker
-        chmod +x ./build_and_upload.sh
-        ./build_and_upload.sh
-      working-directory: ${{ github.workspace }} # Ensure script runs from the repo root
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ vars.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Build and push multi-arch image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./docker # Build context is the docker folder
+        file: ./docker/Dockerfile.cpc # Path to the Dockerfile relative to repo root
+        platforms: linux/amd64,linux/arm64 # Architectures to build for
+        push: true # Push the image to Docker Hub
+        tags: | # Tags for the image (arch-agnostic)
+          braxpix/cpctelera-build-cpc:1.0
+          braxpix/cpctelera-build-cpc:latest
+        build-args: | # Pass build arguments
+          FOLDER_ROOT=/build
+        cache-from: type=gha # Optional: Use GitHub Actions cache
+        cache-to: type=gha,mode=max # Optional: Save to GitHub Actions cache
