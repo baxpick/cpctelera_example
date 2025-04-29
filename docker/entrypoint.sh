@@ -44,6 +44,10 @@ else
 fi
 export MYTOOLS="/build/retro/projects/mytools"
 export CPCT_PATH="${MYTOOLS}/cpctelera-linux-${PLATFORM}/cpctelera"
+if [[ ! -d "${CPCT_PATH}" ]]; then
+    echo "Error: cpctelera path not found: ${CPCT_PATH}"
+    exit 1
+fi
 export PATH=${PATH}:${CPCT_PATH}/tools/sdcc-3.6.8-r9946/bin
 export PATH=${PATH}:${CPCT_PATH}/tools/2cdt/bin
 export PATH=${PATH}:${CPCT_PATH}/tools/cpc2cdt/bin
