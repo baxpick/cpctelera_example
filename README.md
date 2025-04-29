@@ -51,6 +51,13 @@ docker run -it --rm \
     *   `Dockerfile.cpc`: Instructions to build the Docker image for `cpc` platform, including installing dependencies. All is done in 2 stages: build (used to build cpctelera) and run stage (used to actually build your own cpctelera project).
     *   `entrypoint.sh`: The script that runs when the container starts. It sets up environment variables, optionally clones a Git repo, and executes the specified `BUILD_SCRIPT`.
     *   `build_and_upload.sh`: A helper script to build the Docker image and push it to Docker Hub.
+*   `.github/workflows/docker-build-push.yml`: GitHub Actions workflow to automatically build and push the Docker image.
+
+## GitHub Actions
+
+This repository includes a GitHub Actions workflow defined in `.github/workflows/docker-build-push.yml` which can be used to build and push docker image.
+
+Note that you must set repository variables `DOCKERHUB_USERNAME` and `DOCKERHUB_PASSWORD`.
 
 ## Notes
 
@@ -76,7 +83,7 @@ RUN apk add --no-cache \
     file
 ```
 
-Some of those are needed for cpctelera at runtime but some are just convenient for me. Feel free to update this list to make your image smaller or to add packages needed for building your cpctelera project.
+Some of those are needed for cpctelera projects at compile-time but some are just convenient for me. Feel free to update this list to make your image smaller or to add packages needed for building your cpctelera project.
 
 2. `development` branch is used when cloning cpctelera as it contains many useful stuff so if you need other branch (there have been braking changes between branches) you should update this in Dockerfile:
 

@@ -1,0 +1,27 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4 # Checks out your repository under $GITHUB_WORKSPACE
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Run build and upload script
+      env:
+        DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }} # Use repository variable for username
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }} # Use repository secret for password
+      run: |
+        cd docker
+        chmod +x ./build_and_upload.sh
+        ./build_and_upload.sh
+      working-directory: ${{ github.workspace }} # Ensure script runs from the repo root
