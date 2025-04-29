@@ -14,7 +14,11 @@ This example focuses on building the `platformClimber` game, originally found in
 
 ## Using the Pre-built Docker Image
 
-A pre-built Docker image (`braxpix/cpctelera-build-arm64-cpc:1.0`) is available on Docker Hub, supporting arm64 architecture but the build script (`docker/build_and_upload.sh`) can be used to build and deploy for any other supported architecture.
+Pre-built Docker images are available on Docker Hub:
+*   `braxpix/cpctelera-build-x86_64-cpc` (for x86_64 / amd64 systems)
+*   `braxpix/cpctelera-build-arm64-cpc` (for arm64 / aarch64 systems, like Apple Silicon Macs)
+
+You can also use the build script (`docker/build_and_upload.sh`) locally to build an image for your specific architecture if needed.
 
 ## Running a Build
 
@@ -29,6 +33,12 @@ docker run -it --rm \
     -e BUILD_PLATFORM=cpc \
     -v "$(pwd)":/tmp/CPC \
     braxpix/cpctelera-build-arm64-cpc:1.0
+```
+
+If you want to run on amd64 architecture, use:
+
+```
+braxpix/cpctelera-build-x86_64-cpc:1.0
 ```
 
 **Explanation of the `docker run` command:**
