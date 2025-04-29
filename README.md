@@ -18,7 +18,7 @@ A pre-built Docker image (`braxpix/cpctelera-build-arm64-cpc:1.0`) is available 
 
 ## Running a Build
 
-To build the `platformClimber` example project using the pre-built Docker container, on macOS with silicon chip, run the following command:
+To build the `platformClimber` example project using the pre-built Docker image, on macOS with silicon chip, run the following command:
 
 ```bash
 docker run -it --rm \
@@ -36,11 +36,10 @@ docker run -it --rm \
 *   Environment variables used by the `docker/entrypoint.sh` script:
     *   `GIT_ROOT`, `GIT_ROOT_CREDS`, `GIT_PROJECT_SUFIX`: Used to clone the specified Git repository *into* the container's `/build/retro/projects` directory if needed but you can also mount the local code instead. Note that in case credentials are needed to clone the repo, you need to enter them as part of `GIT_ROOT_CREDS` variable, otherwise this variable is the same as `GIT_ROOT`.
     *   `BUILD_SCRIPT`: The absolute path *inside the container* to the build script that should be executed.
-    *   `BUILD_PLATFORM`: Specifies the target platform for CPCtelera (e.g., `cpc`). Defaults to `cpc` if not set. Currently only `cpc` platform is supported but there are plans to support other Z80 platforms. This variable is used to export `CPCT_PATH` variable to point to correct path with prebuilt cpctelera and to extend `PATH` to make correct cpctelera tools visible.
+    *   `BUILD_PLATFORM`: Specifies the target platform for CPCtelera (e.g., `cpc`). Defaults to `cpc` if not set. Currently only `cpc` platform is supported but there are plans to support other Z80 platforms. This variable is used to export `CPCT_PATH` variable to point to correct path with pre-built cpctelera and to extend `PATH` to make correct cpctelera tools visible.
 
-**Build Output:**
-
-After the container runs successfully, the compiled game disk image (`.dsk` file) will be available in the current folder since docker mounts `/tmp/CPC` here and this is also where build script will copy the build result to.
+*   Build Output:
+    *   After the container runs successfully, the compiled game disk image (`.dsk` file) will be available in the current folder since docker mounts `/tmp/CPC` here and this is also where build script will copy the build result to.
 
 ## Repository Structure
 
