@@ -17,7 +17,9 @@ This example focuses on building the `platformClimber` game, originally found in
 
 A pre-built multi-architecture Docker image is available on [Docker Hub](https://hub.docker.com/r/braxpix/cpctelera-build-cpc):
 
-To build the `platformClimber` example project using the pre-built Docker image, run the following command:
+### 1. Clone cpctelera project and build it using custom script
+
+This repo contains `platformClimber` example project which can be used to demonstrate this use case:
 
 ```bash
 docker run -it --rm \
@@ -29,13 +31,32 @@ docker run -it --rm \
     braxpix/cpctelera-build-cpc:latest
 ```
 
-Docker will automatically detect your system's architecture (amd64 or arm64) and pull the appropriate image layers.
+When container is started, [repo](https://github.com/baxpick/cpctelera_example) is cloned to `/build/retro/projects`. If you need credentials to clone repo, you need to set them in `GIT_ROOT_CREDS` variable.
 
-When container is started, [repo](https://github.com/baxpick/cpctelera_example) is cloned to `/build/retro/projects`. If you need credentials to clone repo, you need to set them in `GIT_ROOT_CREDS` variable. If you don't want to clone your project but build project from local filesystem, make sure you mount the project to container to see it.
-
-Since container already contains pre-built cpctelera in (for example) `/build/retro/projects/mytools/cpctelera-linux-cpc` and all cpctelera environment variables and system PATH are set, we can execute build script provided in `BUILD_SCRIPT` variable.
+Then script provided in `BUILD_SCRIPT` variable is executed.
 
 In the end, you will have final build product `game.dsk` in your current folder since build script copies it to `/tmp/CPC` and this is mounted to your current folder.
+
+### 2. Execute cpctelera commands locally
+
+Create alias like this:
+
+```bash
+alias cpct='docker run --rm -v $(pwd):/hostMachine -w /hostMachine braxpix/cpctelera-build-cpc:latest'
+```
+
+Then, you can for example create cpctelera project:
+
+```bash
+cpct cpct_mkproject myGame
+```
+
+and then compile it manually:
+
+```bash
+cd myGame
+cpct make
+```
 
 ## Repository Structure
 
