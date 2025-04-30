@@ -58,6 +58,8 @@ cd myGame
 cpct make
 ```
 
+Note that you might need to adjust build config to comment out android part since support for it is removed to save space.
+
 ## Repository Structure
 
 *   `README.md`: This file.
@@ -101,3 +103,5 @@ Some of those are needed for cpctelera projects at compile-time but some are jus
 ```docker
 git clone -b BRANCH_YOU_NEED https://github.com/lronaldo/cpctelera
 ```
+
+3. During building final image folder `cpctelera/tools/android` is removed to save space. If you need it, you must update Dockerfile and create your own image.

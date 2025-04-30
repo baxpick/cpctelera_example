@@ -31,7 +31,7 @@ jobs:
         username: ${{ vars.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-    - name: Build and push multi-arch image
+    - name: Build and push multi-arch image for CPC
       uses: docker/build-push-action@v5
       with:
         context: ./docker # Build context is the docker folder
@@ -41,6 +41,21 @@ jobs:
         tags: | # Tags for the image (arch-agnostic)
           braxpix/cpctelera-build-cpc:1.0
           braxpix/cpctelera-build-cpc:latest
+        build-args: | # Pass build arguments
+          FOLDER_ROOT=/build
+        cache-from: type=gha # Optional: Use GitHub Actions cache
+        cache-to: type=gha,mode=max # Optional: Save to GitHub Actions cache
+
+    - name: Build and push multi-arch image for ENTERPRISE
+      uses: docker/build-push-action@v5
+      with:
+        context: ./docker # Build context is the docker folder
+        file: ./docker/Dockerfile.enterprise # Path to the Dockerfile relative to repo root
+        platforms: linux/amd64,linux/arm64 # Architectures to build for
+        push: true # Push the image to Docker Hub
+        tags: | # Tags for the image (arch-agnostic)
+          braxpix/cpctelera-build-enterprise:1.0
+          braxpix/cpctelera-build-enterprise:latest
         build-args: | # Pass build arguments
           FOLDER_ROOT=/build
         cache-from: type=gha # Optional: Use GitHub Actions cache
