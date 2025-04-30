@@ -38,16 +38,16 @@ RUN \
         musl-dev
 
 # Copy patch file to mytools directory
-#COPY cpctelera_enterprise.patch ${MYTOOLS}/
+COPY cpctelera_enterprise.patch ${MYTOOLS}/
 
 # prepare cpctelera source for ENTERPRISE
 RUN cd "${MYTOOLS}" && \
     git clone -b development https://github.com/lronaldo/cpctelera && \
     rm -rf cpctelera/.git && \
-    mv cpctelera cpctelera-linux-enterprise
-    # cd cpctelera-linux-enterprise && \
-    # patch -p1 < ../cpctelera_enterprise.patch && \
-    # rm ../cpctelera_enterprise.patch
+    mv cpctelera cpctelera-linux-enterprise && \
+    cd cpctelera-linux-enterprise && \
+    patch -p1 < ../cpctelera_enterprise.patch && \
+    rm ../cpctelera_enterprise.patch
 
 # build cpctelera for ENTERPRISE
 RUN cd "${MYTOOLS}/cpctelera-linux-enterprise" && \
