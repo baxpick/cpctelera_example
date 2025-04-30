@@ -35,15 +35,12 @@ if [[ -n "${GIT_ROOT}" ]] && [[ -n "${GIT_ROOT_CREDS}" ]] && [[ -n "${GIT_PROJEC
 fi
 
 # Set up environment variables
-PLATFORM="cpc"
-if [[ "${BUILD_PLATFORM}" != "" ]]; then
-    echo "Setting up environment for platform: ${BUILD_PLATFORM}"
-    PLATFORM=${BUILD_PLATFORM}
-else
-    echo "No platform specified. Defaulting to 'cpc'."
+if [[ "${BUILD_PLATFORM}" == "" ]]; then
+    echo "ERROR: BUILD_PLATFORM not set"
+    exit 1
 fi
 export MYTOOLS="/build/retro/projects/mytools"
-export CPCT_PATH="${MYTOOLS}/cpctelera-linux-${PLATFORM}/cpctelera"
+export CPCT_PATH="${MYTOOLS}/cpctelera-linux-${BUILD_PLATFORM}/cpctelera"
 if [[ ! -d "${CPCT_PATH}" ]]; then
     echo "Error: cpctelera path not found: ${CPCT_PATH}"
     exit 1
