@@ -15,11 +15,9 @@ This example focuses on building the `platformClimber` game, originally found in
 
 ## Using the Pre-built Docker Image
 
-A pre-built multi-architecture Docker image is available on [Docker Hub](https://hub.docker.com/r/braxpix/cpctelera-build-cpc):
+A pre-built multi-architecture Docker image is available on DockerHub for [CPC](https://hub.docker.com/r/braxpix/cpctelera-build-cpc) and [Enterprise](https://hub.docker.com/r/braxpix/cpctelera-build-enterprise)
 
 ### 1. Clone cpctelera project and build it using custom script
-
-This repo contains `platformClimber` example project which can be used to demonstrate this use case:
 
 ```bash
 docker run -it --rm \
@@ -66,11 +64,15 @@ Note that you might need to adjust build config to comment out android part sinc
 *   `platformClimber/*`: The example CPCtelera game project.
     *   `build.sh`: Simple script to run `make` and copy the output (`*.dsk`) to `/tmp/CPC`. This script should be executed by the Docker container by providing it's absolute path via `BUILD_SCRIPT` variable.
     *   Other source is copied from [cpctelera example](https://github.com/lronaldo/cpctelera/tree/development/examples/games/platformClimber)
+
 *   `docker/*`: Contains files related to the Docker image creation.
     *   `Dockerfile.cpc`: Instructions to build the multi-architecture Docker image for `cpc` platform, including installing dependencies. All is done in 2 stages: first stage is used to build cpctelera and second stage is used to create final image with pre-build binaries.
     *   `entrypoint.sh`: The script that runs when the container starts. It sets up environment variables, optionally clones a Git repo, and executes the specified `BUILD_SCRIPT`.
     *   `build_and_upload.sh`: Helper script if you don't want to build and push docker image using github action.
+
 *   `.github/workflows/docker-build-push.yml`: GitHub Actions workflow to automatically build and push the multi-architecture Docker image to Docker Hub. Note that we must set repository variables `DOCKERHUB_USERNAME` and `DOCKERHUB_PASSWORD` in your GitHub repository settings for the login and push to Docker Hub to succeed.
+
+*   `emulator/*`: This directory contains files for a web-based emulator code from https://github.com/floooh/tiny8bit.git
 
 ## Notes
 
