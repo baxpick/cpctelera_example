@@ -57,11 +57,18 @@ export PATH=${PATH}:${CPCT_PATH}/tools/winape
 export PATH=${PATH}:${CPCT_PATH}/tools/zx7b/bin
 export PATH=${PATH}:${CPCT_PATH}/tools/scripts
 
-# Run build script if provided
-if [[ -n "${BUILD_SCRIPT}" && -f "${BUILD_SCRIPT}" ]]; then
+if [[ $# -gt 0 ]]; then
+    # If arguments are passed to the entrypoint, execute them
+    echo "Executing command: $@"
+    exec "$@"
+elif [[ -n "${BUILD_SCRIPT}" && -f "${BUILD_SCRIPT}" ]]; then
+    # If no arguments, but BUILD_SCRIPT is set, run it
     echo "Running custom build script: ${BUILD_SCRIPT}"
-    exec "${BUILD_SCRIPT}" "$@"
+    # Note: This assumes BUILD_SCRIPT does not require arguments from docker run
+    exec "${BUILD_SCRIPT}"
 else
-    echo "No custom build script provided. Starting interactive shell."
+    # If no arguments and no BUILD_SCRIPT, start interactive shell
+    echo "No command or custom build script provided. Starting interactive shell."
     exec bash
 fi
+
