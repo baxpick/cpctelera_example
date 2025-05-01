@@ -12,7 +12,7 @@ on:
 
 jobs:
   build-and-push-cpc:
-    uses: ./.github/workflows/reusable-docker-build-push-push.yml
+    uses: ./.github/workflows/reusable-docker-build-push.yml
     with:
       dockerfile: ./docker/Dockerfile.cpc
       image_name: braxpix/cpctelera-build-cpc
