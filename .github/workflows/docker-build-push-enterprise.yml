@@ -4,8 +4,11 @@ on:
   push:
     branches: [ main ]
     paths:
-      - '.github/workflows/docker-build-push.yml'
-      - 'docker/**'
+      - '.github/workflows/docker-build-push-enterprise.yml'
+      - 'docker/Dockerfile.enterprise'
+      - 'docker/entrypoint.sh'
+      - 'docker/enterprise/**'
+      - 'docker/cpctelera_enterprise.patch'
   workflow_dispatch: # Allows manual triggering
 
 jobs:
@@ -31,21 +34,6 @@ jobs:
       with:
         username: ${{ vars.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-    - name: Build and push multi-arch image for CPC
-      uses: docker/build-push-action@v5
-      with:
-        context: ./docker
-        file: ./docker/Dockerfile.cpc
-        platforms: linux/amd64,linux/arm64
-        push: true
-        tags: |
-          braxpix/cpctelera-build-cpc:1.0
-          braxpix/cpctelera-build-cpc:latest
-        build-args: |
-          FOLDER_ROOT=/build
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
 
     - name: Build and push multi-arch image for ENTERPRISE
       uses: docker/build-push-action@v5

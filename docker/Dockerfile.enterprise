@@ -74,7 +74,7 @@ COPY enterprise/sjasmsrc42c /tmp
 
 # Build sjasm
 RUN cd "/tmp/sjasmsrc42c" && \
-    make || { echo "ERROR: Failed to build sjasm"; exit 1; }
+    make
 
 # Final stage
 # ########################################################################################
