@@ -19,6 +19,7 @@ echo "Build completed successfully."
 
 [[ ! -d /tmp/CPC ]] && mkdir -p /tmp/CPC
 cp *.dsk /tmp/CPC
+cp obj/*.bin /tmp/CPC
 if [[ $? -ne 0 ]]; then
     echo "Error: Deploy failed."
     exit 1

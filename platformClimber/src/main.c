@@ -17,15 +17,19 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //------------------------------------------------------------------------------
 
+// REMARK: Small changes to original file are made
+
 #include <cpctelera.h>
 #include "sprites/sprites.h"
 #include "game.h"
 
-////////////////////////////////////////////////////////////////////////////////
-// Initialization of the Amstrad CPC at the start of the application
-//   Sets Palette and Mode, and disables firmware
+//////////////////////////////////////////////////////////////////////
+// CODE ENTRANCE POINT FOR THIS EXAMPLE
 //
-void initializeCPC() {
+void main(void) {
+   u16 score;     // Accumulated score in a game
+   u16 hi;        // Hi-score
+
    // Disable firmware: we dont want it to interfere with our code
    cpct_disableFirmware();
 
@@ -36,22 +40,13 @@ void initializeCPC() {
 
    // Change to Mode 0 (160x200, 16 colours)
    cpct_setVideoMode(0);
-}
-
-
-//////////////////////////////////////////////////////////////////////
-// CODE ENTRANCE POINT FOR THIS EXAMPLE
-//
-void main(void) {
-   u16 score;     // Accumulated score in a game
-   u16 hi = 0;    // Hi-score
-
-   // Initialize CPC before starting the game
-   initializeCPC();
 
    //
    // Inifinite loop (play game, end, start another game)
    //
+
+   hi = 0;
+
    while(1) {
       score = game(hi);    // Play a game and get the score
       showGameEnd(score);  // Show end-game stats

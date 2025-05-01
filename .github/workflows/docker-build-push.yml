@@ -19,8 +19,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    # Needed for multi-arch builds on a single runner
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3 # Needed for multi-arch builds on a single runner
+      uses: docker/setup-qemu-action@v3
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -34,29 +35,29 @@ jobs:
     - name: Build and push multi-arch image for CPC
       uses: docker/build-push-action@v5
       with:
-        context: ./docker # Build context is the docker folder
-        file: ./docker/Dockerfile.cpc # Path to the Dockerfile relative to repo root
-        platforms: linux/amd64,linux/arm64 # Architectures to build for
-        push: true # Push the image to Docker Hub
-        tags: | # Tags for the image (arch-agnostic)
+        context: ./docker
+        file: ./docker/Dockerfile.cpc
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: |
           braxpix/cpctelera-build-cpc:1.0
           braxpix/cpctelera-build-cpc:latest
-        build-args: | # Pass build arguments
+        build-args: |
           FOLDER_ROOT=/build
-        cache-from: type=gha # Optional: Use GitHub Actions cache
-        cache-to: type=gha,mode=max # Optional: Save to GitHub Actions cache
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
     - name: Build and push multi-arch image for ENTERPRISE
       uses: docker/build-push-action@v5
       with:
-        context: ./docker # Build context is the docker folder
-        file: ./docker/Dockerfile.enterprise # Path to the Dockerfile relative to repo root
-        platforms: linux/amd64,linux/arm64 # Architectures to build for
-        push: true # Push the image to Docker Hub
-        tags: | # Tags for the image (arch-agnostic)
+        context: ./docker
+        file: ./docker/Dockerfile.enterprise
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: |
           braxpix/cpctelera-build-enterprise:1.0
           braxpix/cpctelera-build-enterprise:latest
-        build-args: | # Pass build arguments
+        build-args: |
           FOLDER_ROOT=/build
-        cache-from: type=gha # Optional: Use GitHub Actions cache
-        cache-to: type=gha,mode=max # Optional: Save to GitHub Actions cache
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

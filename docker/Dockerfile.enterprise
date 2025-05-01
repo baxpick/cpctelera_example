@@ -69,6 +69,13 @@ RUN for platform in enterprise; do \
     rm -rf "${FOLDER_CPCTELERA}"/cpctelera/tools/img2cpc/lib; \
 done
 
+# Copy sjasm source code
+COPY enterprise/sjasmsrc42c /tmp
+
+# Build sjasm
+RUN cd "/tmp/sjasmsrc42c" && \
+    make || { echo "ERROR: Failed to build sjasm"; exit 1; }
+
 # Final stage
 # ########################################################################################
 
@@ -83,6 +90,10 @@ ENV MYTOOLS="${FOLDER_PROJECTS}/mytools"
 
 # Copy only required folders from builder
 COPY --from=builder ${MYTOOLS}/cpctelera-linux-enterprise ${MYTOOLS}/cpctelera-linux-enterprise/
+# Copy the built sjasm binary
+COPY --from=builder /tmp/sjasmsrc42c/sjasm /usr/local/bin
+# Copy loader
+COPY enterprise/loader.asm ${FOLDER_PROJECTS}
 
 # Install runtime dependencies only
 RUN apk add --no-cache \
