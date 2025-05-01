@@ -1,5 +1,10 @@
 name: Build and Push Docker Image (Enterprise)
 
+# Grant permissions for the reusable workflow to push packages
+permissions:
+  contents: read
+  packages: write
+
 on:
   push:
     branches: [ main ]
