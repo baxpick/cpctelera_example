@@ -14,7 +14,7 @@ on:
 
 jobs:
   build-and-push-enterprise:
-    uses: ./.github/workflows/reusable-docker-build-push.yml@main
+    uses: ./.github/workflows/reusable-docker-build-push.yml
     with:
       dockerfile: ./docker/Dockerfile.enterprise
       image_name: braxpix/cpctelera-build-enterprise
