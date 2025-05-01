@@ -72,6 +72,9 @@ done
 # Copy sjasm source code
 COPY enterprise/sjasmsrc42c /tmp
 
+# Debug: List contents of /tmp to verify copy
+RUN ls -la /tmp
+
 # Build sjasm
 RUN cd "/tmp/sjasmsrc42c" && \
     make
