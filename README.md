@@ -35,6 +35,12 @@ Then script provided in `BUILD_SCRIPT` variable is executed.
 
 In the end, you will have final build product `game.dsk` in your current folder since build script copies it to `/tmp/CPC` and this is mounted to your current folder.
 
+To run the generated `game.dsk` file in a web-based emulator, see the instructions in [emulator/README.md](emulator/README.md).
+
+Result is here:
+
+![Platform Climber Screenshot](res/platformClimber.png)
+
 ### 2. Execute cpctelera commands locally
 
 Create alias like this:
@@ -58,21 +64,49 @@ cpct make
 
 Note that you might need to adjust build config to comment out android part since support for it is removed to save space.
 
-## Repository Structure
+### 3. Port game to ENTERPRISE
 
-*   `README.md`: This file.
-*   `platformClimber/*`: The example CPCtelera game project.
-    *   `build.sh`: Simple script to run `make` and copy the output (`*.dsk`) to `/tmp/CPC`. This script should be executed by the Docker container by providing it's absolute path via `BUILD_SCRIPT` variable.
-    *   Other source is copied from [cpctelera example](https://github.com/lronaldo/cpctelera/tree/development/examples/games/platformClimber)
+NOTE: All credits for porting cpctelera to match Enterprise specifics, creating loader code and providing support in general go to Geco! Thanks again!
 
-*   `docker/*`: Contains files related to the Docker image creation.
-    *   `Dockerfile.cpc`: Instructions to build the multi-architecture Docker image for `cpc` platform, including installing dependencies. All is done in 2 stages: first stage is used to build cpctelera and second stage is used to create final image with pre-build binaries.
-    *   `entrypoint.sh`: The script that runs when the container starts. It sets up environment variables, optionally clones a Git repo, and executes the specified `BUILD_SCRIPT`.
-    *   `build_and_upload.sh`: Helper script if you don't want to build and push docker image using github action.
+Porting cpctelera game can be tricky, but this simple example found in `box` folder is a good way to see how it works.
 
-*   `.github/workflows/docker-build-push.yml`: GitHub Actions workflow to automatically build and push the multi-architecture Docker image to Docker Hub. Note that we must set repository variables `DOCKERHUB_USERNAME` and `DOCKERHUB_PASSWORD` in your GitHub repository settings for the login and push to Docker Hub to succeed.
+1. Update [build configuration](box/cfg/build_config.mk) so that CPCT_PATH is not set (docker image will setup this for you)
 
-*   `emulator/*`: This directory contains files for a web-based emulator code from https://github.com/floooh/tiny8bit.git
+```bash
+#CPCT_PATH      := $(THIS_FILE_PATH)../../../../cpctelera/
+```
+
+2. Update [build configuration](box/cfg/build_config.mk) so that code location is set to, for example, `0x4000` since this memory is safe to use having in mind that we will have a [loader](docker/enterprise/loader.asm) to prepare, load program binary and jump to correct program start location.
+
+```bash
+Z80CODELOC := 0x4000
+```
+
+3. From any folder execute
+
+```
+docker run -it --rm \
+    -e GIT_ROOT_CREDS="https://github.com" \
+    -e GIT_ROOT="https://github.com" \
+    -e GIT_PROJECT_SUFIX="baxpick/cpctelera_example" \
+    -e BUILD_SCRIPT=/build/retro/projects/box/build_enterprise.sh \
+    -v "$(pwd)":/tmp/OUT \
+    braxpix/cpctelera-build-enterprise:latest
+```
+
+and you will get: `loader.com` and `box.bin` files which you can copy to Enterprise emulator and when executed:
+
+```
+RUN "loader.com"
+```
+
+result can be seen here:
+
+![Left: CPC, Right: Enterprise](res/box_CPC_vs_EP.png)
+
+Important things to consider when porting to Enterprise:
+- you need to map colors to match yours
+- FIXXXME: ...
 
 ## Notes
 

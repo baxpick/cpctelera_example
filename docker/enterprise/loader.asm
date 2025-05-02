@@ -205,7 +205,7 @@ loading
 	jp      file2start              ;start address (this has to be updated or checked after each compile)
 loading_end
 
-file2:  db      8,"game.bin"       ;file name to be loaded
+file2:  db      8,"game.bin"       ; GENERATED
 
 vidadd	ld      a,h                     ;Create CPC screen addressing into LPT
         add     a,8                     ; 1. char row: 0c000h, 0c800h, 0d000h, 0d800h, 0e000h, 0e8000h, 0f000h, 0f8000h 

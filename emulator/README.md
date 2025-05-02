@@ -23,7 +23,7 @@
     RUN "PCLIMBER"
     ```
 
-    or if you already know what to run, go to:
+    or if you already know what to run inside dsk image, go to something like:
 
     http://localhost:8080/cpc/cpc.html?file=game.dsk&input=run%22PCLIMBER%0A
 
