@@ -1,5 +1,3 @@
-; Original author: Geco
-
 vidpage         equ     83h           ;1 video page on 0c000h
 ;vidpage         equ     80h           ;1 video page on 00000h
 bias            equ     31
@@ -8,8 +6,8 @@ reset           equ     00a0h
 lptstrt         equ     8000h
 
 file2load equ 4000h ; GENERATED !!!
-file2length equ 7888  ; GENERATED !!!
-file2start equ 4649h ; GENERATED !!!
+file2length equ 13209 ; GENERATED !!!
+file2start equ 4000h ; GENERATED !!!
 
         macro exos n
                 rst 30h
@@ -207,7 +205,7 @@ loading
 	jp      file2start              ;start address (this has to be updated or checked after each compile)
 loading_end
 
-file2:  db      12,"osmobito.bin"       ;file name to be loaded
+file2:  db      8,"game.bin"       ;file name to be loaded
 
 vidadd	ld      a,h                     ;Create CPC screen addressing into LPT
         add     a,8                     ; 1. char row: 0c000h, 0c800h, 0d000h, 0d800h, 0e000h, 0e8000h, 0f000h, 0f8000h 
