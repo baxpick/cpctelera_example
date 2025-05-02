@@ -54,7 +54,7 @@ echo "Build loader completed successfully."
 
 [[ ! -d /tmp/OUT ]] && mkdir -p /tmp/OUT
 
-cp "${BIN}" /tmp/OUT && cp "${LOADER_BIN}" /tmp/OUT
+cp "${BIN}" /tmp/OUT && cp "${LOADER_BIN}" /tmp/OUT && cp "${LOADER_SRC}" /tmp/OUT
 if [[ $? -ne 0 ]]; then
     echo "Error: Deploy failed."
     exit 1
