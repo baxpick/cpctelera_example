@@ -36,7 +36,7 @@ CODE_START="$(cat ${RST_MAIN} |grep main:: |perl -p -e 's/\s+([^\s]+)\s+.*/\1/g'
 perl -i -p -e "s/file2start.*GENERATED.*/file2start equ ${CODE_START}/g" "${LOADER_SRC}"
 
 BIN_NAME=$(basename $BIN)
-BIN_NAME_SIZE=$(echo $BIN_NAME |wc -c)
+BIN_NAME_SIZE=$(echo -n $BIN_NAME |wc -c)
 perl -i -p -e "s/file2:.*GENERATED.*/file2: db ${BIN_NAME_SIZE},\"${BIN_NAME}\"/g" "${LOADER_SRC}"
 
 # Build loader binary
