@@ -73,7 +73,6 @@ done
 RUN cd /tmp && \
     git clone --recursive https://github.com/z00m128/sjasmplus.git && \
     cd sjasmplus && \
-    make clean && \
     make
 
 # Final stage
