@@ -75,7 +75,8 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-    - name: Build and push multi-arch image
+    - name: Build and push multi-arch image to Docker Hub
+      id: myImage
       uses: docker/build-push-action@v5
       with:
         context: ${{ inputs.build_context }}
@@ -99,11 +100,11 @@ jobs:
     - name: Copy image to Azure Container Registry (version tag)
       run: |
         docker buildx imagetools create \\
-          ${{ inputs.image_name }}:${{ inputs.image_version }} \\
+          ${{ inputs.image_name }}@${{ steps.myImage.outputs.digest }} \\
           --tag ${{ inputs.acr_login_server }}/${{ inputs.acr_image_name }}:${{ inputs.image_version }}
 
     - name: Copy image to Azure Container Registry (latest tag)
       run: |
         docker buildx imagetools create \\
-          ${{ inputs.image_name }}:latest \\
+          ${{ inputs.image_name }}@${{ steps.myImage.outputs.digest }} \\
           --tag ${{ inputs.acr_login_server }}/${{ inputs.acr_image_name }}:latest
