@@ -98,13 +98,7 @@ jobs:
         password: ${{ secrets.ACR_PASSWORD }}
 
     - name: Copy image to Azure Container Registry (version tag)
-      run: |
-        docker buildx imagetools create \\
-          ${{ inputs.image_name }}@${{ steps.myImage.outputs.digest }} \\
-          --tag ${{ inputs.acr_login_server }}/${{ inputs.acr_image_name }}:${{ inputs.image_version }}
+      run: docker buildx imagetools create docker.io/${{ inputs.image_name }}@${{ steps.myImage.outputs.digest }} --tag ${{ inputs.acr_login_server }}/${{ inputs.acr_image_name }}:${{ inputs.image_version }}
 
     - name: Copy image to Azure Container Registry (latest tag)
-      run: |
-        docker buildx imagetools create \\
-          ${{ inputs.image_name }}@${{ steps.myImage.outputs.digest }} \\
-          --tag ${{ inputs.acr_login_server }}/${{ inputs.acr_image_name }}:latest
+      run: docker buildx imagetools create docker.io/${{ inputs.image_name }}@${{ steps.myImage.outputs.digest }} --tag ${{ inputs.acr_login_server }}/${{ inputs.acr_image_name }}:latest
