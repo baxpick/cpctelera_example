@@ -30,12 +30,26 @@ on:
         required: false
         type: string
         default: 'linux/amd64,linux/arm64'
+      acr_login_server:
+        description: 'Azure Container Registry login server (e.g., myregistry.azurecr.io)'
+        required: true
+        type: string
+      acr_image_name:
+        description: 'Image name in Azure Container Registry (e.g., myrepo/myimage)'
+        required: true
+        type: string
     secrets:
       DOCKERHUB_USERNAME:
         description: 'Docker Hub Username'
         required: true
       DOCKERHUB_PASSWORD:
         description: 'Docker Hub Password or Token'
+        required: true
+      ACR_USERNAME:
+        description: 'Azure Container Registry Username'
+        required: true
+      ACR_PASSWORD:
+        description: 'Azure Container Registry Password'
         required: true
 
 jobs:
@@ -74,3 +88,22 @@ jobs:
         build-args: ${{ inputs.build_args }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
+
+    - name: Log in to Azure Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ inputs.acr_login_server }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Copy image to Azure Container Registry (version tag)
+      run: |
+        docker buildx imagetools create \\
+          ${{ inputs.image_name }}:${{ inputs.image_version }} \\
+          --tag ${{ inputs.acr_login_server }}/${{ inputs.acr_image_name }}:${{ inputs.image_version }}
+
+    - name: Copy image to Azure Container Registry (latest tag)
+      run: |
+        docker buildx imagetools create \\
+          ${{ inputs.image_name }}:latest \\
+          --tag ${{ inputs.acr_login_server }}/${{ inputs.acr_image_name }}:latest

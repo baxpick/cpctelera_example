@@ -24,6 +24,10 @@ jobs:
       dockerfile: ./docker/Dockerfile.enterprise
       image_name: braxpix/cpctelera-build-enterprise
       image_version: 1.0
+      acr_login_server: acrbaxosprod.azurecr.io
+      acr_image_name: cpctelera-build-enterprise
     secrets:
       DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
       DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+      ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
