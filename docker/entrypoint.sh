@@ -21,7 +21,7 @@ if [[ -n "${GIT_ROOT}" ]] && [[ -n "${GIT_ROOT_CREDS}" ]] && [[ -n "${GIT_PROJEC
     # Clone the repository with submodules
     git clone --recurse-submodules "${GIT_PROJECT_TO_BUILD_REPO}" "${TMP_CLONE_DIR}" >/dev/null 2>&1
     
-    # Copy files to FOLDER_PROJECTS while preserving directory structure
+    # Copy files while preserving directory structure
     echo "Copying project files to ${FOLDER_PROJECTS}"
     
     # Use rsync-like behavior with cp to merge directories
@@ -33,6 +33,17 @@ if [[ -n "${GIT_ROOT}" ]] && [[ -n "${GIT_ROOT_CREDS}" ]] && [[ -n "${GIT_PROJEC
     rm  ~/.git-credentials
 
     echo "Repository cloned and files copied successfully"
+# Use the existing repository if it's already cloned
+elif [[ -n "${PROJECT_IS_ALREADY_HERE}" ]]; then
+    if [[ ! -d "${PROJECT_IS_ALREADY_HERE}" ]]; then
+        echo "ERROR: PROJECT_IS_ALREADY_HERE not found: '${PROJECT_IS_ALREADY_HERE}'"
+        exit 1
+    fi
+
+    echo "Copying project files to ${FOLDER_PROJECTS}"
+    cp -a "${PROJECT_IS_ALREADY_HERE}/." "${FOLDER_PROJECTS}/"
+    
+    echo "Files copied successfully"    
 fi
 
 # Set up environment variables
@@ -43,7 +54,7 @@ fi
 export MYTOOLS="/build/retro/projects/mytools"
 export CPCT_PATH="${MYTOOLS}/cpctelera-linux-${BUILD_PLATFORM}/cpctelera"
 if [[ ! -d "${CPCT_PATH}" ]]; then
-    echo "Error: cpctelera path not found: ${CPCT_PATH}"
+    echo "ERROR: cpctelera path not found: ${CPCT_PATH}"
     exit 1
 fi
 export PATH=${PATH}:${CPCT_PATH}/tools/sdcc-3.6.8-r9946/bin
@@ -65,7 +76,7 @@ if [[ $# -gt 0 ]]; then
 elif [[ -n "${BUILD_SCRIPT}" ]]; then
 
     if [[ ! -f "${BUILD_SCRIPT}" ]]; then
-        echo "Error: build script not found: '${BUILD_SCRIPT}'"
+        echo "ERROR: build script not found: '${BUILD_SCRIPT}'"
         exit 1
     fi
 
