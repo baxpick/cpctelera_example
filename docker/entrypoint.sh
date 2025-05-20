@@ -61,7 +61,13 @@ if [[ $# -gt 0 ]]; then
     # If arguments are passed to the entrypoint, execute them
     echo "Executing command: $@"
     exec "$@"
-elif [[ -n "${BUILD_SCRIPT}" && -f "${BUILD_SCRIPT}" ]]; then
+elif [[ -n "${BUILD_SCRIPT}" ]]; then
+
+    if [[ ! -f "${BUILD_SCRIPT}" ]]; then
+        echo "Error: build script not found: '${BUILD_SCRIPT}'"
+        exit 1
+    fi
+
     # If no arguments, but BUILD_SCRIPT is set, run it
     echo "Running custom build script: ${BUILD_SCRIPT}"
     # Note: This assumes BUILD_SCRIPT does not require arguments from docker run
