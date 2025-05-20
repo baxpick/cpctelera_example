@@ -5,14 +5,14 @@
 # HOW: ... FIXXXME: !!! ...
 
 # Clone repository if variables are set
-if [[ -n "${GIT_ROOT}" ]] && [[ -n "${GIT_ROOT_CREDS}" ]] && [[ -n "${GIT_PROJECT_SUFIX}" ]]; then
+if [[ -n "${GIT_ROOT}" ]] && [[ -n "${GIT_ROOT_CREDS}" ]] && [[ -n "${GIT_PROJECT_SUFFIX}" ]]; then
     
     # setup git credentials, even works for submodules
     git config --global credential.helper store
     echo "${GIT_ROOT_CREDS}" > ~/.git-credentials
     git config --global url."${GIT_ROOT_CREDS}".insteadOf "${GIT_ROOT}"
 
-    GIT_PROJECT_TO_BUILD_REPO="${GIT_ROOT_CREDS}/${GIT_PROJECT_SUFIX}"
+    GIT_PROJECT_TO_BUILD_REPO="${GIT_ROOT_CREDS}/${GIT_PROJECT_SUFFIX}"
     echo "Cloning project repository: ${GIT_PROJECT_TO_BUILD_REPO}"
     
     # Create a temporary directory for cloning

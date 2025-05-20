@@ -23,7 +23,7 @@ A pre-built multi-architecture Docker image is available on DockerHub for [CPC](
 docker run -it --rm \
     -e GIT_ROOT_CREDS="https://github.com" \
     -e GIT_ROOT="https://github.com" \
-    -e GIT_PROJECT_SUFIX="baxpick/cpctelera_example" \
+    -e GIT_PROJECT_SUFFIX="baxpick/cpctelera_example" \
     -e BUILD_SCRIPT=/build/retro/projects/platformClimber/build.sh \
     -v "$(pwd)":/tmp/CPC \
     braxpix/cpctelera-build-cpc:latest
@@ -88,7 +88,7 @@ Z80CODELOC := 0x4000
 docker run -it --rm \
     -e GIT_ROOT_CREDS="https://github.com" \
     -e GIT_ROOT="https://github.com" \
-    -e GIT_PROJECT_SUFIX="baxpick/cpctelera_example" \
+    -e GIT_PROJECT_SUFFIX="baxpick/cpctelera_example" \
     -e BUILD_SCRIPT=/build/retro/projects/box/build_enterprise.sh \
     -v "$(pwd)":/tmp/OUT \
     braxpix/cpctelera-build-enterprise:latest
