@@ -16,9 +16,9 @@ RUN mkdir -p "${MYTOOLS}"
 RUN \
     ARCH=$(arch) && \
     if [[ ${ARCH} == "aarch64" ]] || [[ ${ARCH} == "arm64" ]]; then \
-        echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
+        echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
         apk update && \
-        apk add --no-cache mono@testing mono-dev@testing; \
+        apk add --no-cache mono@community mono-dev@community; \
     elif [[ ${ARCH} == "x86_64" ]] || [[ ${ARCH} == "amd64" ]]; then \
         echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
         apk update && \
