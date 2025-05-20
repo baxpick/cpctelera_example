@@ -10,7 +10,7 @@ if [[ -n "${GIT_ROOT}" ]] && [[ -n "${GIT_ROOT_CREDS}" ]] && [[ -n "${GIT_PROJEC
     # setup git credentials, even works for submodules
     git config --global credential.helper store
     echo "${GIT_ROOT_CREDS}" > ~/.git-credentials
-    git config --global url."${GIT_ROOT_CREDS}".insteadOf "${GIT_ROOT}"
+    git config --global url."${GIT_ROOT_CREDS}".insteadOf "${GIT_ROOT}" >/dev/null 2>&1
 
     GIT_PROJECT_TO_BUILD_REPO="${GIT_ROOT_CREDS}/${GIT_PROJECT_SUFFIX}"
     echo "Cloning project repository: ${GIT_PROJECT_TO_BUILD_REPO}"
@@ -19,7 +19,7 @@ if [[ -n "${GIT_ROOT}" ]] && [[ -n "${GIT_ROOT_CREDS}" ]] && [[ -n "${GIT_PROJEC
     TMP_CLONE_DIR=$(mktemp -d)
     
     # Clone the repository with submodules
-    git clone --recurse-submodules "${GIT_PROJECT_TO_BUILD_REPO}" "${TMP_CLONE_DIR}"
+    git clone --recurse-submodules "${GIT_PROJECT_TO_BUILD_REPO}" "${TMP_CLONE_DIR}" >/dev/null 2>&1
     
     # Copy files to FOLDER_PROJECTS while preserving directory structure
     echo "Copying project files to ${FOLDER_PROJECTS}"
@@ -28,9 +28,10 @@ if [[ -n "${GIT_ROOT}" ]] && [[ -n "${GIT_ROOT_CREDS}" ]] && [[ -n "${GIT_PROJEC
     # This ensures files from the repo are merged with existing directories
     cp -a "${TMP_CLONE_DIR}/." "${FOLDER_PROJECTS}/"
     
-    # Clean up the temporary directory
+    # Clean up
     rm -rf "${TMP_CLONE_DIR}"
-    
+    rm  ~/.git-credentials
+
     echo "Repository cloned and files copied successfully"
 fi
 
