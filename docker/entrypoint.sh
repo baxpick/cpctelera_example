@@ -1,52 +1,75 @@
 #!/usr/bin/env bash
 
-# WHAT: FIXXXME: !!! ...
-# WHY: To build any cpctelera project from within a container
-# HOW: ... FIXXXME: !!! ...
+# WHAT: Entrypoint script for fetching, configuring environment and building cpctelera projects
+# WHY: To automate this process for usage in local and remote (from docker containers) builds
+# HOW: Dockerfile should execute it as the entrypoint
 
-# Clone repository if variables are set
-if [[ -n "${GIT_ROOT}" ]] && [[ -n "${GIT_ROOT_CREDS}" ]] && [[ -n "${GIT_PROJECT_SUFFIX}" ]]; then
-    
-    # setup git credentials, even works for submodules
-    git config --global credential.helper store
-    echo "${GIT_ROOT_CREDS}" > ~/.git-credentials
-    git config --global url."${GIT_ROOT_CREDS}".insteadOf "${GIT_ROOT}" >/dev/null 2>&1
+# Clone repository (which has creds) ?
+if [[ -n "${PROJECT_GIT_REPO}" ]]; then
 
-    GIT_PROJECT_TO_BUILD_REPO="${GIT_ROOT_CREDS}/${GIT_PROJECT_SUFFIX}"
-    echo "Cloning project repository: ${GIT_PROJECT_TO_BUILD_REPO}"
-    
-    # Create a temporary directory for cloning
-    TMP_CLONE_DIR=$(mktemp -d)
-    
-    # Clone the repository with submodules
-    git clone --recurse-submodules "${GIT_PROJECT_TO_BUILD_REPO}" "${TMP_CLONE_DIR}" >/dev/null 2>&1
-    
-    # Copy files while preserving directory structure
-    echo "Copying project files to ${FOLDER_PROJECTS}"
-    
-    # Use rsync-like behavior with cp to merge directories
-    # This ensures files from the repo are merged with existing directories
-    cp -a "${TMP_CLONE_DIR}/." "${FOLDER_PROJECTS}/"
-    
-    # Clean up
-    rm -rf "${TMP_CLONE_DIR}"
-    rm  ~/.git-credentials
+    # 1) In case of this git repo format: https://USER:TOKEN@DOMAIN/SUFFIX
+    if [[ "${PROJECT_GIT_REPO}" =~ ^https://([^:]+):([^@]+)@([^/]+)/.+$ ]]; then
+        user=${BASH_REMATCH[1]}
+        token=${BASH_REMATCH[2]}
+        domain=${BASH_REMATCH[3]}
 
-    echo "Repository cloned and files copied successfully"
+        GIT_ROOT="https://${user}@${domain}"
+        GIT_ROOT_CREDS="https://${user}:${token}@${domain}"
+
+        # setup git credentials, even works for submodules
+        git config --global credential.helper store
+        echo "${GIT_ROOT_CREDS}" > ~/.git-credentials
+        git config --global url."${GIT_ROOT_CREDS}".insteadOf "${GIT_ROOT}" >/dev/null 2>&1
+
+        echo "Cloning project repository..."
+        
+        # Create a temporary directory for cloning
+        TMP_CLONE_DIR=$(mktemp -d)
+        
+        # Clone the repository with submodules
+        git clone --recurse-submodules "${PROJECT_GIT_REPO}" "${TMP_CLONE_DIR}" >/dev/null 2>&1
+        
+        if [[ $? -ne 0 ]]; then
+            echo "ERROR: Failed to clone repository"
+            exit 1
+        else
+            echo "Cloning project repository finished successfully"
+        fi
+
+        # Copy files while preserving directory structure
+        echo "Copying project files to ${FOLDER_PROJECTS}..."
+        
+        # Use rsync-like behavior with cp to merge directories
+        # This ensures files from the repo are merged with existing directories
+        cp -a "${TMP_CLONE_DIR}/." "${FOLDER_PROJECTS}/"
+        
+        echo "Copying project files to ${FOLDER_PROJECTS} finished successfully"
+
+        # Clean up
+        rm -rf "${TMP_CLONE_DIR}"
+        rm  ~/.git-credentials
+
+    else
+        echo "ERROR: Unsupported git repo format"
+        exit 1
+    fi
+
 # Use the existing repository if it's already cloned
 elif [[ -n "${PROJECT_IS_ALREADY_HERE}" ]]; then
+
     if [[ ! -d "${PROJECT_IS_ALREADY_HERE}" ]]; then
-        echo "ERROR: PROJECT_IS_ALREADY_HERE not found: '${PROJECT_IS_ALREADY_HERE}'"
+        echo "ERROR: Folder '${PROJECT_IS_ALREADY_HERE}' not found"
         exit 1
     fi
 
     echo "Copying project files to ${FOLDER_PROJECTS}"
     cp -a "${PROJECT_IS_ALREADY_HERE}/." "${FOLDER_PROJECTS}/"
-    
-    echo "Files copied successfully"    
+    echo "Copying project files to ${FOLDER_PROJECTS} finished successfully"
 fi
 
 # Set up environment variables
+# ############################
+
 if [[ "${BUILD_PLATFORM}" == "" ]]; then
     echo "ERROR: BUILD_PLATFORM not set"
     exit 1
@@ -68,6 +91,9 @@ export PATH=${PATH}:${CPCT_PATH}/tools/rgas-1.2.2
 export PATH=${PATH}:${CPCT_PATH}/tools/winape
 export PATH=${PATH}:${CPCT_PATH}/tools/zx7b/bin
 export PATH=${PATH}:${CPCT_PATH}/tools/scripts
+
+# MAIN
+# ####
 
 if [[ $# -gt 0 ]]; then
     # If arguments are passed to the entrypoint, execute them
