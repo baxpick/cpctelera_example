@@ -17,23 +17,49 @@ This example focuses on building the `platformClimber` game, originally found in
 
 A pre-built multi-architecture Docker image is available on DockerHub for [CPC](https://hub.docker.com/r/braxpix/cpctelera-build-cpc) and [Enterprise](https://hub.docker.com/r/braxpix/cpctelera-build-enterprise)
 
-### 1. Clone cpctelera project and build it using custom script
+### 1. Clone and build project from https git repo
+
+In this example we assume:
+
+- you are building for Amstrad CPC platform
+- cpctelera project is located on private git repo in this format: https://USER:TOKEN@DOMAIN/SUFFIX
+- build script is located on that repo here: `myProject/build_from_container.sh`
+- build script copies build results to container folder `/output`
+- you want build results in your current folder
+- build script needs environment variable `VAR1` with value `VALUE1`
+
+Example docker command to execute is:
 
 ```bash
 docker run -it --rm \
-    -e GIT_ROOT_CREDS="https://github.com" \
-    -e GIT_ROOT="https://github.com" \
-    -e GIT_PROJECT_SUFFIX="baxpick/cpctelera_example" \
-    -e BUILD_SCRIPT=/build/retro/projects/platformClimber/build.sh \
-    -v "$(pwd)":/tmp/CPC \
+    -v $(pwd):/output:rw \
+    \
+    -e VAR1="VALUE1" \
+    -e PROJECT_GIT_REPO="https://USER:TOKEN@DOMAIN/SUFFIX" \
+    -e BUILD_SCRIPT="/build/retro/projects/myProject/build_from_container.sh" \
+    \
     braxpix/cpctelera-build-cpc:latest
 ```
 
-When container is started, [repo](https://github.com/baxpick/cpctelera_example) is cloned to `/build/retro/projects`. If you need credentials to clone repo, you need to set them in `GIT_ROOT_CREDS` variable.
+Working example using public repo: (note that you must provide dummy credentials to match the format)
 
-Then script provided in `BUILD_SCRIPT` variable is executed.
+```bash
+docker run -it --rm \
+    -v "$(pwd)":/tmp/CPC \
+    \
+    -e PROJECT_GIT_REPO="https://USER:TOKEN@github.com/baxpick/cpctelera_example.git" \
+    -e BUILD_SCRIPT="/build/retro/projects/platformClimber/build.sh" \
+    \
+    braxpix/cpctelera-build-cpc:latest
+```
 
-In the end, you will have final build product `game.dsk` in your current folder since build script copies it to `/tmp/CPC` and this is mounted to your current folder.
+And now, in current folder you have build results:
+
+```bash
+ls -la
+-rw-r--r--@  1 user  staff   13209 May 21 14:52 game.bin
+-rw-r--r--@  1 user  staff  204544 May 21 14:52 game.dsk
+```
 
 To run the generated `game.dsk` file in a web-based emulator, see the instructions in [emulator/README.md](emulator/README.md).
 
@@ -41,7 +67,32 @@ Result is here:
 
 ![Platform Climber Screenshot](res/platformClimber.png)
 
-### 2. Execute cpctelera commands locally
+### 2. Clone and build project from local folder
+
+In this example we assume:
+
+- you are building for Amstrad CPC platform
+- cpctelera project is located in current folder
+- build script here: `platformClimber/build.sh`
+- build script copies build results to container folder `/tmp/CPC`
+- you want build results in folder `./OUTPUT`
+
+Example docker command to execute is:
+
+```bash
+docker run -it --rm \
+    -v "$(pwd)/OUTPUT":/tmp/CPC:rw \
+    \
+    -v "$(pwd)":/mounted_project \
+    -e PROJECT_IS_ALREADY_HERE="/mounted_project" \
+    -e BUILD_SCRIPT="/build/retro/projects/platformClimber/build.sh" \
+    \
+    braxpix/cpctelera-build-cpc:latest
+```
+
+
+
+### 3. Execute cpctelera commands locally
 
 Create alias like this:
 
@@ -64,7 +115,7 @@ cpct make
 
 Note that you might need to adjust build config to comment out android part since support for it is removed to save space.
 
-### 3. Port game to ENTERPRISE
+### 4. Port game to ENTERPRISE
 
 NOTE: All credits for porting cpctelera to match Enterprise specifics, creating loader code and providing support in general go to Geco! Thanks again!
 
@@ -86,9 +137,7 @@ Z80CODELOC := 0x4000
 
 ```
 docker run -it --rm \
-    -e GIT_ROOT_CREDS="https://github.com" \
-    -e GIT_ROOT="https://github.com" \
-    -e GIT_PROJECT_SUFFIX="baxpick/cpctelera_example" \
+    -e PROJECT_GIT_REPO="https://USER:TOKEN@github.com/baxpick/cpctelera_example.git" \
     -e BUILD_SCRIPT=/build/retro/projects/box/build_enterprise.sh \
     -v "$(pwd)":/tmp/OUT \
     braxpix/cpctelera-build-enterprise:latest
