@@ -19,13 +19,13 @@ if [[ "${PLATFORM}" == "enterprise" ]]; then
 fi
 
 if [[ "${PLATFORM}" == "enterprise" ]]; then
-    BIN="obj/${PROJNAME}.bin"
+    BIN="${FOLDER_PROJECTS}/obj/${PROJNAME}.bin"
 elif [[ "${PLATFORM}" == "cpc" ]]; then
-    BIN="${PROJNAME}.dsk"
+    BIN="${FOLDER_PROJECTS}/${PROJNAME}.dsk"
 fi
 
-RST_MAIN="obj/main.rst"
-BUILD_CFG="cfg/build_config.mk"
+RST_MAIN="${FOLDER_PROJECTS}/obj/main.rst"
+BUILD_CFG="${FOLDER_PROJECTS}/cfg/build_config.mk"
 
 # Update build configuration
 # ##########################

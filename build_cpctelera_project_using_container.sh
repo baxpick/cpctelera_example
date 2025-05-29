@@ -115,7 +115,19 @@ fi
 # Build
 # #####
 
-exit 0
+IMAGE="braxpix/cpctelera-build-${PLATFORM}:latest"
+
+if ! command -v docker >/dev/null 2>&1; then
+    echo "ERROR: Docker is not installed or not in PATH."
+    exit 1
+fi
+
+echo "Pulling Docker image '${IMAGE}'..."
+docker pull "${IMAGE}" >/dev/null 2>&1 || {
+    echo "ERROR: Failed to pull Docker image '${IMAGE}'."
+    exit 1
+}
+echo "Pulling Docker image '${IMAGE}' done successfully."
 
 docker run -it --rm \
     -v "${FOLDER_SRC}":/mounted_project \
@@ -129,4 +141,4 @@ docker run -it --rm \
     -e BUILDCFG_Z80CODELOC="${BUILDCFG_Z80CODELOC}" \
     -e BUILDCFG_Z80CCFLAGS="${BUILDCFG_Z80CCFLAGS:-}" \
     \
-    braxpix/cpctelera-build-${PLATFORM}:latest
+    "${IMAGE}"
