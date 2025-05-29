@@ -7,10 +7,23 @@
 PLATFORM=${BUILD_PLATFORM}
 [[ "${PLATFORM}" == "" ]] && { echo "Error: BUILD_PLATFORM is not set."; exit 1; }
 
+# const variables
+RST_MAIN="${FOLDER_PROJECTS}/obj/main.rst"
+BUILD_CFG="${FOLDER_PROJECTS}/cfg/build_config.mk"
+
 # optional variables (default empty/not used)
 PROJNAME=${BUILDCFG_PROJNAME:-""}
 Z80CODELOC=${BUILDCFG_Z80CODELOC:-""}
 Z80CCFLAGS=${BUILDCFG_Z80CCFLAGS:-""}
+
+# although optional PROJNAME must be set
+if [[ "${PROJNAME}" == "" ]]; then
+    PROJNAME=$(perl -ne 'print $1 and exit if /^\s*PROJNAME\s*:=\s*(\S+)/' "${BUILD_CFG}")
+fi
+if [[ "${PROJNAME}" == "" ]]; then
+    echo "Error: PROJNAME is not set."
+    exit 1
+fi
 
 # generated variables
 if [[ "${PLATFORM}" == "enterprise" ]]; then
@@ -23,9 +36,6 @@ if [[ "${PLATFORM}" == "enterprise" ]]; then
 elif [[ "${PLATFORM}" == "cpc" ]]; then
     BIN="${FOLDER_PROJECTS}/${PROJNAME}.dsk"
 fi
-
-RST_MAIN="${FOLDER_PROJECTS}/obj/main.rst"
-BUILD_CFG="${FOLDER_PROJECTS}/cfg/build_config.mk"
 
 # Update build configuration
 # ##########################
