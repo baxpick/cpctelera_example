@@ -49,11 +49,13 @@ fi
 # build
 # #####
 
+cd ${FOLDER_PROJECTS}
 make
 if [[ $? -ne 0 ]]; then
     echo "Error: Build failed."
     exit 1
 fi
+cd -
 echo "Build completed successfully."
 
 if [[ "${PLATFORM}" == "enterprise" ]]; then
