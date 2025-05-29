@@ -103,5 +103,7 @@ RUN rm -rf /var/cache/apk/*
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+COPY build_cpctelera_project_from_container.sh ${FOLDER_PROJECTS}
+
 ENV BUILD_PLATFORM="cpc"
 ENTRYPOINT ["/entrypoint.sh"]
