@@ -4,9 +4,13 @@
 
 This repository provides a way to create a Docker-based build environment for [CPCtelera](https://github.com/lronaldo/cpctelera), a C development framework for the Amstrad CPC home computer.
 
-The primary goal is to offer a consistent and isolated build environment that works across different host operating systems, including native support for both x86_64 (amd64) and aarch64 (arm64) architectures via a multi-architecture Docker image.
+The primary goal is to offer a consistent, isolated and minimal build environment that works across different host operating systems, including native support for both x86_64 (amd64) and aarch64 (arm64) architectures via a multi-architecture Docker image.
 
-This example focuses on building the `platformClimber` game, originally found in the CPCtelera examples, but the Docker image can be used to build other CPCtelera projects.
+## Thanks
+
+Everyone mentioned in [AUTHORS.md](AUTHORS.md) - thank you!
+
+Special thanks go to Geco for providing Enterprise [port](docker/cpctelera_enterprise.patch) of cpctelera, [loader.asm](docker/enterprise/loader.asm) and support.
 
 ## Prerequisites
 
@@ -17,11 +21,96 @@ This example focuses on building the `platformClimber` game, originally found in
 
 A pre-built multi-architecture Docker image is available on DockerHub for [CPC](https://hub.docker.com/r/braxpix/cpctelera-build-cpc) and [Enterprise](https://hub.docker.com/r/braxpix/cpctelera-build-enterprise)
 
-### 1. Clone and build project from https git repo
+### 1️⃣ Build project (from local folder) using default build script
+
+Fetch example projects and default build script:
+
+```bash
+git clone -b development https://github.com/lronaldo/cpctelera.git
+
+curl -L -o build.sh https://raw.githubusercontent.com/baxpick/cpctelera_example/main/build_cpctelera_project_using_container.sh
+chmod +x build.sh
+
+mkdir -p OUTPUT/CPC
+mkdir -p OUTPUT/ENTERPRISE
+```
+
+You can customize/override some build parameters like changing project name, compiled binary location or adding C compiler flags.
+
+```bash
+./build.sh --help
+Usage: ./build.sh [OPTIONS]
+Build cpctelera project in a Docker container.
+  --folder-src            Path to source folder (where cpctelera project is: with Makefile, src/cfg folders, ...)
+  --folder-output         Path to output folder (where you want the build output to be placed)
+  --platform              Platform (cpc|enterprise)
+  --buildcfg-projname     (optional) Name of the project binary (sets build_config.mk variable PROJNAME)
+  --buildcfg-z80codeloc   (optional) Memory location where binary should start (sets build_config.mk variable Z80CODELOC)
+  --buildcfg-z80ccflags   (optional) Additional CFLAGS (appends to build_config.mk variable Z80CCFLAGS)
+```
+
+**Example 1: Amstrad CPC**
+
+Execute this to build `platformClimber` example for `Amstrad CPC` computer:
+
+```bash
+./build.sh --folder-src ./cpctelera/examples/games/platformClimber --folder-output OUTPUT/CPC --platform cpc
+```
+
+Now, result binaries should be created in `OUTPUT/CPC` folder:
+
+```bash
+game.dsk
+```
+
+Use your favorite emulator or check out one included here [emulator/README.md](emulator/README.md).
+
+```bash
+RUN "PCLIMBER"
+```
+
+![Platform Climber Screenshot](res/example_output_cpc_platformClimber.png)
+
+
+**Example 2: Enterprise**
+
+Execute this to build `sprites` example for `Enterprise` computer:
+
+```bash
+./build.sh --folder-src ./cpctelera/examples/easy/sprites --folder-output OUTPUT/ENTERPRISE --platform enterprise
+```
+
+Now, result binaries should be created in `OUTPUT/ENTERPRISE` folder:
+
+```bash
+sprites.com
+sprites.bin
+```
+
+Open Enterprise emulator and:
+
+```bash
+RUN "SPRITES.COM"
+```
+
+![SpritesExampleOnEnterprise](res/example_output_enterprise_sprites.gif)
+
+**With no changes at all to the code - it runs on Enterprise computer!**
+
+Of course, porting cpctelera project to Enterprise can be tricky.
+
+Important things to consider when porting to Enterprise:
+
+- you don't have Amstrad CPC specific stuff like firmware or ROMS
+- you need to map colors to match yours
+- some (gfx related?) code/data should be below 0xC000, like setBorder and setPalette
+- list of not ported (or not working) cpctelera functions: TODO...
+- ... TODO
+
+### 2️⃣ Build project (from https git repo) using custom build script
 
 In this example we assume:
 
-- you are building for Amstrad CPC platform
 - cpctelera project is located on private git repo in this format: https://USER:TOKEN@DOMAIN/SUFFIX
 - build script is located on that repo here: `myProject/build_from_container.sh`
 - build script copies build results to container folder `/output`
@@ -41,39 +130,12 @@ docker run -it --rm \
     braxpix/cpctelera-build-cpc:latest
 ```
 
-Working example using public repo: (note that you must provide dummy credentials to match the format)
-
-```bash
-docker run -it --rm \
-    -v "$(pwd)":/tmp/CPC \
-    \
-    -e PROJECT_GIT_REPO="https://USER:TOKEN@github.com/baxpick/cpctelera_example.git" \
-    -e BUILD_SCRIPT="/build/retro/projects/platformClimber/build.sh" \
-    \
-    braxpix/cpctelera-build-cpc:latest
-```
-
-And now, in current folder you have build results:
-
-```bash
-ls -la
--rw-r--r--@  1 user  staff   13209 May 21 14:52 game.bin
--rw-r--r--@  1 user  staff  204544 May 21 14:52 game.dsk
-```
-
-To run the generated `game.dsk` file in a web-based emulator, see the instructions in [emulator/README.md](emulator/README.md).
-
-Result is here:
-
-![Platform Climber Screenshot](res/platformClimber.png)
-
-### 2. Clone and build project from local folder
+### 3️⃣ Build project (from local folder) using custom build script
 
 In this example we assume:
 
-- you are building for Amstrad CPC platform
 - cpctelera project is located in current folder
-- build script here: `platformClimber/build.sh`
+- build script here: `myProject/build.sh`
 - build script copies build results to container folder `/tmp/CPC`
 - you want build results in folder `./OUTPUT`
 
@@ -85,14 +147,12 @@ docker run -it --rm \
     \
     -v "$(pwd)":/mounted_project \
     -e PROJECT_IS_ALREADY_HERE="/mounted_project" \
-    -e BUILD_SCRIPT="/build/retro/projects/platformClimber/build.sh" \
+    -e BUILD_SCRIPT="/build/retro/projects/myProject/build.sh" \
     \
     braxpix/cpctelera-build-cpc:latest
 ```
 
-
-
-### 3. Execute cpctelera commands locally
+### 4️⃣ Execute cpctelera commands locally
 
 Create alias like this:
 
@@ -115,78 +175,10 @@ cpct make
 
 Note that you might need to adjust build config to comment out android part since support for it is removed to save space.
 
-### 4. Port game to ENTERPRISE
-
-NOTE: All credits for porting cpctelera to match Enterprise specifics, creating loader code and providing support in general go to Geco! Thanks again!
-
-Porting cpctelera game can be tricky, but this simple example found in `box` folder is a good way to see how it works.
-
-1. Update [build configuration](box/cfg/build_config.mk) so that CPCT_PATH is not set (docker image will setup this for you)
-
-```bash
-#CPCT_PATH      := $(THIS_FILE_PATH)../../../../cpctelera/
-```
-
-2. Update [build configuration](box/cfg/build_config.mk) so that code location is set to, for example, `0x4000` since this memory is safe to use having in mind that we will have a [loader](docker/enterprise/loader.asm) to prepare, load program binary and jump to correct program start location.
-
-```bash
-Z80CODELOC := 0x4000
-```
-
-3. From any folder execute
-
-```
-docker run -it --rm \
-    -e PROJECT_GIT_REPO="https://USER:TOKEN@github.com/baxpick/cpctelera_example.git" \
-    -e BUILD_SCRIPT=/build/retro/projects/box/build_enterprise.sh \
-    -v "$(pwd)":/tmp/OUT \
-    braxpix/cpctelera-build-enterprise:latest
-```
-
-and you will get: `loader.com` and `box.bin` files which you can copy to Enterprise emulator and when executed:
-
-```
-RUN "loader.com"
-```
-
-result can be seen here:
-
-![Left: CPC, Right: Enterprise](res/box_CPC_vs_EP.png)
-
-Important things to consider when porting to Enterprise:
-- you need to map colors to match yours
-- FIXXXME: ...
-
 ## Notes
 
-1. These are runtime packages installed in final image:
+1. Some of runtime packages in docker image are needed for cpctelera projects but some are just convenient for me. Feel free to update this list to make your image smaller or to add packages needed for building your cpctelera project.
 
-```docker
-# Install runtime dependencies only
-RUN apk add --no-cache \
-    bash \
-    perl \
-    dos2unix \
-    grep \
-    coreutils \
-    make \
-    freeimage-dev \
-    bc \
-    util-linux \
-    graphicsmagick \
-    xxd \
-    python3 \
-    jq \
-    git \
-    file
-```
-
-Some of those are needed for cpctelera projects at compile-time but some are just convenient for me. Feel free to update this list to make your image smaller or to add packages needed for building your cpctelera project.
-
-2. `development` branch is used when cloning cpctelera as it contains many useful stuff so if you need other branch (there have been braking changes between branches) you should update this in Dockerfile:
-
-```docker
-git clone -b BRANCH_YOU_NEED https://github.com/lronaldo/cpctelera
-```
+2. `development` branch (at this point of time) is used when cloning cpctelera so if you need any other branch / commit (there have been braking changes between branches) you should update Dockerfile, maybe even [Enterprise patch](docker/cpctelera_enterprise.patch) file and re-create images.
 
 3. During building final image folder `cpctelera/tools/android` is removed to save space. If you need it, you must update Dockerfile and create your own image.
