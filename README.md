@@ -97,6 +97,22 @@ RUN "SPRITES.COM"
 
 **With no changes at all to the code - it runs on Enterprise computer!**
 
+This is quite simple example, but can a complete game work?
+
+Try this:
+
+```bash
+./build.sh --folder-src ./cpctelera/examples/games/platformClimber --folder-output OUTPUT/ENTERPRISE --platform enterprise
+```
+
+```bash
+RUN "GAME.COM"
+```
+
+and result is here - enjoy:
+
+![PlatformClimberExampleOnEnterprise](res/example_output_enterprise_platformClimber.gif)
+
 Of course, porting cpctelera project to Enterprise can be tricky.
 
 Important things to consider when porting to Enterprise:
