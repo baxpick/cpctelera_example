@@ -108,7 +108,8 @@ fi
 cp "${BIN}" /tmp/OUT
 
 if [[ "${DEPLOY_EXTRA}" == "true" ]]; then
-    cp -r "${FOLDER_PROJECTS}/obj" /tmp/OUT    
+    cp -r "${FOLDER_PROJECTS}/obj" /tmp/OUT
+    cp -r "${FOLDER_PROJECTS}/cfg" /tmp/OUT
 fi
 
 if [[ "${PLATFORM}" == "enterprise" ]]; then
