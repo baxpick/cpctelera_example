@@ -28,7 +28,8 @@ Fetch example projects and default build script:
 ```bash
 git clone -b development https://github.com/lronaldo/cpctelera.git
 
-curl -L -o build.sh https://raw.githubusercontent.com/baxpick/cpctelera_example/main/build_cpctelera_project_using_container.sh
+curl -L -o build.sh \
+  https://raw.githubusercontent.com/baxpick/cpctelera_example/main/build_cpctelera_project_using_container.sh
 chmod +x build.sh
 
 mkdir -p OUTPUT/CPC
@@ -37,16 +38,16 @@ mkdir -p OUTPUT/ENTERPRISE
 
 You can customize/override some build parameters like changing project name, compiled binary location or adding C compiler flags.
 
-```bash
+```
 ./build.sh --help
-Usage: ./build.sh [OPTIONS]
 Build cpctelera project in a Docker container.
-  --folder-src            Path to source folder (where cpctelera project is: with Makefile, src/cfg folders, ...)
-  --folder-output         Path to output folder (where you want the build output to be placed)
-  --platform              Platform (cpc|enterprise)
-  --buildcfg-projname     (optional) Name of the project binary (sets build_config.mk variable PROJNAME)
-  --buildcfg-z80codeloc   (optional) Memory location where binary should start (sets build_config.mk variable Z80CODELOC)
-  --buildcfg-z80ccflags   (optional) Additional CFLAGS (appends to build_config.mk variable Z80CCFLAGS)
+  --folder-src                Path to source folder (where cpctelera project is: with Makefile, src/cfg folders, ...)
+  --folder-output             Path to output folder (where you want the build output to be placed)
+  --platform                  Platform (cpc|enterprise)
+  --build-deploy-extra ARG    (optional) (true|false - default: false) If set, deploy additional files for debug purpose mainly (e.g. object files)
+  --buildcfg-z80ccflags ARG   (optional) Additional CFLAGS (appends to build_config.mk variable Z80CCFLAGS)
+  --buildcfg-z80codeloc ARG   (optional) Memory location where binary should start (sets build_config.mk variable Z80CODELOC)
+  --buildcfg-z80ccflags ARG   (optional) Additional CFLAGS (appends to build_config.mk variable Z80CCFLAGS)
 ```
 
 **Example 1: Amstrad CPC**
@@ -54,7 +55,10 @@ Build cpctelera project in a Docker container.
 Execute this to build `platformClimber` example for `Amstrad CPC` computer:
 
 ```bash
-./build.sh --folder-src ./cpctelera/examples/games/platformClimber --folder-output OUTPUT/CPC --platform cpc
+./build.sh \
+    --folder-src ./cpctelera/examples/games/platformClimber \
+    --folder-output OUTPUT/CPC \
+    --platform cpc
 ```
 
 Now, result binaries should be created in `OUTPUT/CPC` folder:
@@ -77,7 +81,10 @@ RUN "PCLIMBER"
 Execute this to build `sprites` example for `Enterprise` computer:
 
 ```bash
-./build.sh --folder-src ./cpctelera/examples/easy/sprites --folder-output OUTPUT/ENTERPRISE --platform enterprise
+./build.sh \
+    --folder-src ./cpctelera/examples/easy/sprites \
+    --folder-output OUTPUT/ENTERPRISE \
+    --platform enterprise
 ```
 
 Now, result binaries should be created in `OUTPUT/ENTERPRISE` folder:

@@ -7,6 +7,9 @@
 PLATFORM=${BUILD_PLATFORM}
 [[ "${PLATFORM}" == "" ]] && { echo "Error: BUILD_PLATFORM is not set."; exit 1; }
 
+DEPLOY_EXTRA=${BUILD_DEPLOY_EXTRA}
+[[ "${DEPLOY_EXTRA}" != "true" ]] && [[ "${DEPLOY_EXTRA}" != "false" ]] && { echo "Error: BUILD_DEPLOY_EXTRA is not set."; exit 1; }
+
 # const variables
 RST_MAIN="${FOLDER_PROJECTS}/obj/main.rst"
 BUILD_CFG="${FOLDER_PROJECTS}/cfg/build_config.mk"
@@ -104,9 +107,17 @@ fi
 
 cp "${BIN}" /tmp/OUT
 
+if [[ "${DEPLOY_EXTRA}" == "true" ]]; then
+    cp -r "${FOLDER_PROJECTS}/obj" /tmp/OUT    
+fi
+
 if [[ "${PLATFORM}" == "enterprise" ]]; then
+
+    if [[ "${DEPLOY_EXTRA}" == "true" ]]; then
+        cp "${LOADER_SRC}" /tmp/OUT      
+    fi
+    
     cp "${LOADER_BIN}" /tmp/OUT
-    cp "${LOADER_SRC}" /tmp/OUT
 fi
 
 if [[ $? -ne 0 ]]; then

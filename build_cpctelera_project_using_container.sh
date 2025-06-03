@@ -25,14 +25,18 @@ abs_path() {
 usage() {
     echo "Usage: $0 [OPTIONS]"
     echo "Build cpctelera project in a Docker container."
-    echo "  --folder-src            Path to source folder (where cpctelera project is: with Makefile, src/cfg folders, ...)"
-    echo "  --folder-output         Path to output folder (where you want the build output to be placed)"
-    echo "  --platform              Platform (cpc|enterprise)"
-    echo "  --buildcfg-projname     (optional) Name of the project binary (sets build_config.mk variable PROJNAME)"
-    echo "  --buildcfg-z80codeloc   (optional) Memory location where binary should start (sets build_config.mk variable Z80CODELOC)"
-    echo "  --buildcfg-z80ccflags   (optional) Additional CFLAGS (appends to build_config.mk variable Z80CCFLAGS)"
+    echo "  --folder-src                Path to source folder (where cpctelera project is: with Makefile, src/cfg folders, ...)"
+    echo "  --folder-output             Path to output folder (where you want the build output to be placed)"
+    echo "  --platform                  Platform (cpc|enterprise)"
+    echo "  --build-deploy-extra ARG    (optional) (true|false - default: false) If set, deploy additional files for debug purpose mainly (e.g. object files)"
+    echo "  --buildcfg-z80ccflags ARG   (optional) Additional CFLAGS (appends to build_config.mk variable Z80CCFLAGS)"
+    echo "  --buildcfg-z80codeloc ARG   (optional) Memory location where binary should start (sets build_config.mk variable Z80CODELOC)"
+    echo "  --buildcfg-z80ccflags ARG   (optional) Additional CFLAGS (appends to build_config.mk variable Z80CCFLAGS)"
     exit 1
 }
+
+# default values for arguments
+BUILD_DEPLOY_EXTRA="false"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -46,6 +50,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --platform)
             PLATFORM="$2"
+            shift 2
+            ;;
+        --build-deploy-extra)
+            BUILD_DEPLOY_EXTRA="$2"
             shift 2
             ;;
         --buildcfg-projname)
@@ -77,6 +85,7 @@ echo "Building cpctelera project with the following parameters:"
 echo "  Source folder: '${FOLDER_SRC}'"
 echo "  Output folder: '${FOLDER_OUTPUT}'"
 echo "  Platform: '${PLATFORM}'"
+echo "  Build deploy extra: '${BUILD_DEPLOY_EXTRA}'"
 echo "  Project name: '${BUILDCFG_PROJNAME}'"
 echo "  Z80 code location: '${BUILDCFG_Z80CODELOC}'"
 echo "  Z80 CFLAGS: '${BUILDCFG_Z80CCFLAGS}'"
@@ -99,6 +108,11 @@ fi
 if [[ -z "${FOLDER_SRC}" || -z "${FOLDER_OUTPUT}" || -z "${PLATFORM}" ]]; then
     echo "ERROR: Missing required arguments"
     usage
+fi
+
+if [[ "${BUILD_DEPLOY_EXTRA}" != "true" && "${BUILD_DEPLOY_EXTRA}" != "false" ]]; then
+    echo "ERROR: Invalid build deploy extra specified. Use 'true' or 'false'."
+    exit 1
 fi
 
 if [[ "${PLATFORM}" != "cpc" && "${PLATFORM}" != "enterprise" ]]; then
@@ -136,9 +150,10 @@ docker run -it --rm \
     -e PROJECT_IS_ALREADY_HERE="/mounted_project" \
     -e BUILD_SCRIPT="/build/retro/projects/build_cpctelera_project_from_container.sh" \
     \
+    -e BUILD_DEPLOY_EXTRA="${BUILD_DEPLOY_EXTRA}" \
     -e BUILD_PLATFORM="${PLATFORM}" \
     -e BUILDCFG_PROJNAME="${BUILDCFG_PROJNAME}" \
     -e BUILDCFG_Z80CODELOC="${BUILDCFG_Z80CODELOC}" \
-    -e BUILDCFG_Z80CCFLAGS="${BUILDCFG_Z80CCFLAGS:-}" \
+    -e BUILDCFG_Z80CCFLAGS="${BUILDCFG_Z80CCFLAGS}" \
     \
     "${IMAGE}"
