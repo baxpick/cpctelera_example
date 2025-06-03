@@ -63,6 +63,12 @@ fi
 # #####
 
 cd ${FOLDER_PROJECTS}
+
+# deploy confinguration for debugging
+if [[ "${DEPLOY_EXTRA}" == "true" ]]; then
+    cp -r "${FOLDER_PROJECTS}/cfg" /tmp/OUT
+fi
+
 make
 if [[ $? -ne 0 ]]; then
     echo "Error: Build failed."
@@ -109,7 +115,6 @@ cp "${BIN}" /tmp/OUT
 
 if [[ "${DEPLOY_EXTRA}" == "true" ]]; then
     cp -r "${FOLDER_PROJECTS}/obj" /tmp/OUT
-    cp -r "${FOLDER_PROJECTS}/cfg" /tmp/OUT
 fi
 
 if [[ "${PLATFORM}" == "enterprise" ]]; then
