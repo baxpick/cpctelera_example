@@ -56,7 +56,7 @@ if [[ "${Z80CODELOC}" != "" ]]; then
 fi
 
 if [[ "${Z80CCFLAGS}" != "" ]]; then
-    perl -i -p -e "s/.*Z80CCFLAGS.* :=(.*)/Z80CCFLAGS := ${Z80CCFLAGS} \\\ \n \1/g" "${BUILD_CFG}"
+    perl -i -p -e 's|.*Z80CCFLAGS.* :=(.*)|Z80CCFLAGS := '"${Z80CCFLAGS}"'\\\n\1|g' "${BUILD_CFG}"
 fi
 
 # build
