@@ -12,7 +12,7 @@ DEPLOY_EXTRA=${BUILD_DEPLOY_EXTRA}
 
 # const variables
 BUILD_CFG="${FOLDER_PROJECTS}/cfg/build_config.mk"
-[[ ! -f "${BUILD_CFG}" == "" ]] && { echo "Error: Build configuration file not found."; exit 1; }
+[[ ! -f "${BUILD_CFG}" ]] && { echo "Error: Build configuration file not found."; exit 1; }
 
 # optional variables (default empty/not used)
 PROJNAME=${BUILDCFG_PROJNAME:-""}
