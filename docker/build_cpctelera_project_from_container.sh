@@ -11,9 +11,6 @@ DEPLOY_EXTRA=${BUILD_DEPLOY_EXTRA}
 [[ "${DEPLOY_EXTRA}" != "true" ]] && [[ "${DEPLOY_EXTRA}" != "false" ]] && { echo "Error: BUILD_DEPLOY_EXTRA is not set."; exit 1; }
 
 # const variables
-RST_MAIN="$(grep -r ' _main::' ${FOLDER_PROJECTS}/obj |grep .rst |cut -d':' -f1)"
-[[ "${RST_MAIN}" == "" ]] && { echo "Error: main entry point not found"; exit 1; }
-
 BUILD_CFG="${FOLDER_PROJECTS}/cfg/build_config.mk"
 [[ ! -f "${BUILD_CFG}" == "" ]] && { echo "Error: Build configuration file not found."; exit 1; }
 
@@ -79,6 +76,9 @@ if [[ $? -ne 0 ]]; then
 fi
 cd -
 echo "Build completed successfully."
+
+RST_MAIN="$(grep -r ' _main::' ${FOLDER_PROJECTS}/obj |grep .rst |cut -d':' -f1)"
+[[ "${RST_MAIN}" == "" ]] && { echo "Error: main entry point not found!"; exit 1; }
 
 if [[ "${PLATFORM}" == "enterprise" ]]; then
 
