@@ -120,6 +120,20 @@ and result is here - enjoy:
 
 ![PlatformClimberExampleOnEnterprise](res/example_output_enterprise_platformClimber.gif)
 
+Another example of "full" game which can be built for both platforms (CPC and Enterprise) is here: https://github.com/baxpick/ludic-break-the-loop
+
+Do this:
+
+```bash
+git clone https://github.com/baxpick/ludic-break-the-loop
+cd ludic-break-the-loop
+./build_all.sh
+```
+
+And you can see side by side both versions:
+
+![SpritesExampleOnEnterprise](res/ludic_cpc_ep.gif)
+
 Of course, porting cpctelera project to Enterprise can be tricky.
 
 Important things to consider when porting to Enterprise:
