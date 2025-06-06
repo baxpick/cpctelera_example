@@ -10,7 +10,7 @@ The primary goal is to offer a consistent, isolated and minimal build environmen
 
 Everyone mentioned in [AUTHORS.md](AUTHORS.md) - thank you!
 
-Special thanks go to Geco for providing Enterprise [port](docker/cpctelera_enterprise.patch) of cpctelera, [loader.asm](docker/enterprise/loader.asm) and support.
+Special thanks go to Geco for providing Enterprise [port](https://github.com/baxpick/cpctelera-enterprise/tree/enterprise-port) of cpctelera, [loader.asm](docker/enterprise/loader.asm) and support.
 
 ## Prerequisites
 
@@ -202,6 +202,6 @@ Note that you might need to adjust build config to comment out android part sinc
 
 1. Some of runtime packages in docker image are needed for cpctelera projects but some are just convenient for me. Feel free to update this list to make your image smaller or to add packages needed for building your cpctelera project.
 
-2. `development` branch (at this point of time) is used when cloning cpctelera so if you need any other branch / commit (there have been braking changes between branches) you should update Dockerfile, maybe even [Enterprise patch](docker/cpctelera_enterprise.patch) file and re-create images.
+2. `development` branch (at specific point in time) is used when cloning cpctelera (even different [repo](https://github.com/baxpick/cpctelera-enterprise/tree/enterprise-port) is used in case of Enterprise port) so if you need any other cpctelera repo/branch/commit do update Dockerfiles and re-create Docker images.
 
 3. During building final image folder `cpctelera/tools/android` is removed to save space. If you need it, you must update Dockerfile and create your own image.

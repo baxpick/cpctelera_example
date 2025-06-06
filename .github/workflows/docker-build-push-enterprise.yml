@@ -15,7 +15,6 @@ on:
       - 'docker/entrypoint.sh'
       - 'docker/build_cpctelera_project_from_container.sh'
       - 'docker/enterprise/**'
-      - 'docker/cpctelera_enterprise.patch'
   workflow_dispatch: # Allows manual triggering
 
 jobs:
