@@ -139,7 +139,7 @@ Of course, porting cpctelera project to Enterprise can be tricky.
 Important things to consider when porting to Enterprise:
 
 - you don't have Amstrad CPC specific stuff like firmware or ROMS
-- you need to map colors to match yours
+- you need to map colors to match yours (see [this](https://github.com/baxpick/ludic-break-the-loop/blob/main/map_colors_from_cpc_to_enterprise.py))
 - some (gfx related?) code/data should be below 0xC000, like setBorder and setPalette
 - list of not ported (or not working) cpctelera functions: TODO...
 - ... TODO
