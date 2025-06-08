@@ -35,7 +35,8 @@ RUN \
         bc util-linux graphicsmagick xxd python3 jq mesa-dev gettext-dev \
         patch \
         gettext-static \
-        musl-dev
+        musl-dev \
+        perl
 
 # prepare cpctelera source for CPC
 RUN cd "${MYTOOLS}" && \

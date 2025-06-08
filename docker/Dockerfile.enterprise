@@ -34,7 +34,8 @@ RUN \
         bison flex boost-dev freeimage-dev \
         bc util-linux graphicsmagick xxd python3 jq mesa-dev gettext-dev \
         gettext-static \
-        musl-dev
+        musl-dev \
+        perl
 
 # prepare cpctelera source for Enterprise
 RUN cd "${MYTOOLS}" && \
