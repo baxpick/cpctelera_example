@@ -36,12 +36,13 @@ RUN \
         gettext-static \
         musl-dev
 
-# prepare cpctelera source for ENTERPRISE
+# prepare cpctelera source for Enterprise
 RUN cd "${MYTOOLS}" && \
     git clone -b enterprise-port https://github.com/baxpick/cpctelera-enterprise.git && \
     rm -rf cpctelera-enterprise/.git && \
-    mv cpctelera-enterprise cpctelera-linux-enterprise && \
-    cd cpctelera-linux-enterprise
+    perl -i -p -e 's/.equ HARDWARE_CPC.*/.equ HARDWARE_CPC , 0/g' cpctelera-enterprise/cpctelera/CPCteleraHW.src && \
+    perl -i -p -e 's/.equ HARDWARE_ENTERPRISE.*/.equ HARDWARE_ENTERPRISE , 1/g' cpctelera-enterprise/cpctelera/CPCteleraHW.src && \
+    mv cpctelera-enterprise cpctelera-linux-enterprise
 
 # build cpctelera for ENTERPRISE
 RUN cd "${MYTOOLS}/cpctelera-linux-enterprise" && \

@@ -39,9 +39,11 @@ RUN \
 
 # prepare cpctelera source for CPC
 RUN cd "${MYTOOLS}" && \
-    git clone -b development https://github.com/lronaldo/cpctelera && \
-    rm -rf cpctelera/.git && \
-    mv cpctelera cpctelera-linux-cpc
+    git clone -b enterprise-port https://github.com/baxpick/cpctelera-enterprise.git && \
+    rm -rf cpctelera-enterprise/.git && \
+    perl -i -p -e 's/.equ HARDWARE_CPC.*/.equ HARDWARE_CPC , 1/g' cpctelera-enterprise/cpctelera/CPCteleraHW.src && \
+    perl -i -p -e 's/.equ HARDWARE_ENTERPRISE.*/.equ HARDWARE_ENTERPRISE , 0/g' cpctelera-enterprise/cpctelera/CPCteleraHW.src && \
+    mv cpctelera-enterprise cpctelera-linux-cpc
 
 # build cpctelera for CPC
 RUN cd "${MYTOOLS}/cpctelera-linux-cpc" && \
