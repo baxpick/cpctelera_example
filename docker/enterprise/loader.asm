@@ -15,9 +15,9 @@ screen_x    equ     40
 ;scrload     equ     0c000h          ;load address of screen file , if it is 0 then screen is not loaded
 scrload     equ     00000h          ;load address of screen file , if it is 0 then screen is not loaded
 scrlength   equ     4000h           ;load length of screen file , name of file has to be set at filescr:
-file1load   equ     4000h           ;load address of file1 , if it is 0 then file1 is not loaded        (ex intro)
-file1length equ     2200h           ;load length of file1 , name of file has to be set at file1:
-file1start  equ     48B8h           ;start address of 1st file, after end it will return to loader
+file1load   equ     0h              ;load address of file1 , if it is 0 then file1 is not loaded        (ex intro)
+file1length equ     0h              ;load length of file1 , name of file has to be set at file1:
+file1start  equ     0h              ;start address of 1st file, after end it will return to loader
 
 ;load address of file2 (main program)
 file2load equ 4000h ; GENERATED !!!
@@ -101,7 +101,8 @@ filescr:
         dbl     "test.scr"    ;file name to be loaded
     endif
     if file1load > 0
-file1:  dbl     "test.pr1"    ;file name to be loaded
+;file1:  dbl     "test.pr1"    ;file name to be loaded
+file1:  db      8,"test1.pr1"
     endif
 
     ;file2:  dbl     "test.pr2"    ;file name to be loaded
