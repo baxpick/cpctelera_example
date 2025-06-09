@@ -105,9 +105,8 @@ filescr:
 file1:  db      8,"test1.pr1"
     endif
 
-    ;file2:  dbl     "test.pr2"    ;file name to be loaded
-    file2:  db      8,"game.bin"       ; GENERATED
-
+;file2:  dbl     "test.pr2"    ;file name to be loaded
+file2:  db      8,"game.bin"       ; GENERATED
 
 loadfile
 		xor		a
