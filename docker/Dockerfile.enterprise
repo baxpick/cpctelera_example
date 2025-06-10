@@ -82,7 +82,6 @@ FROM alpine:latest
 
 # Build argument (only available during build)
 ARG FOLDER_ROOT
-ARG GIT_REF
 
 # Converting to ENV to make it available at runtime
 ENV FOLDER_PROJECTS="${FOLDER_ROOT}/retro/projects"

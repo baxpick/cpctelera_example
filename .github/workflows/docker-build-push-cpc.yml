@@ -23,6 +23,8 @@ jobs:
       dockerfile: ./docker/Dockerfile.cpc
       image_name: braxpix/cpctelera-build-cpc
       image_version: 1.0
+      build_args: |
+        FOLDER_ROOT=/build      
       acr_login_server: acrbaxosprod.azurecr.io
       acr_image_name: cpctelera-build-cpc
     secrets:

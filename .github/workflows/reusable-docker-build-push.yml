@@ -24,7 +24,6 @@ on:
         description: 'Build arguments'
         required: false
         type: string
-        default: 'FOLDER_ROOT=/build'
       platforms:
         description: 'Target platforms for the build'
         required: false
@@ -63,6 +62,13 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Fetch enterprise-port branch commit SHA
+      id: git_ref
+      run: |
+        SHA=$(git ls-remote https://github.com/baxpick/cpctelera-enterprise.git enterprise-port | cut -f1)
+        echo "::set-output name=GIT_REF::$SHA"
+      shell: bash
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
 
@@ -86,7 +92,9 @@ jobs:
         tags: |
           ${{ inputs.image_name }}:${{ inputs.image_version }}
           ${{ inputs.image_name }}:latest
-        build-args: ${{ inputs.build_args }}
+        build-args: |
+          ${{ inputs.build_args }}
+          GIT_REF=${{ steps.git_ref.outputs.GIT_REF }}
         cache-from: type=gha,scope=${{ inputs.image_name }}
         cache-to: type=gha,scope=${{ inputs.image_name }},mode=max
 
