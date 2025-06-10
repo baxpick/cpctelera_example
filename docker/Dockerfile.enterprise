@@ -50,6 +50,7 @@ RUN cd "${MYTOOLS}/cpctelera-linux-enterprise" && \
     ./setup.sh
 
 # clean cpctelera
+# FIXXXME: !!! uncomment this
 # RUN for platform in enterprise; do \
 #     FOLDER_CPCTELERA="${MYTOOLS}/cpctelera-linux-${platform}"; \
 #     FOLDER_SDCC=$(find "${FOLDER_CPCTELERA}"/cpctelera/tools -name 'sdcc*' -type d -maxdepth 1); \
@@ -89,6 +90,32 @@ COPY --from=builder ${MYTOOLS}/cpctelera-linux-enterprise ${MYTOOLS}/cpctelera-l
 COPY --from=builder /tmp/sjasmplus/sjasmplus /usr/local/bin
 # Copy loader
 COPY enterprise/loader.asm ${FOLDER_PROJECTS}
+
+# FIXXXME: !!! remove this !!!
+# Install necessary packages (for cpctelera)
+RUN \
+    ARCH=$(arch) && \
+    if [[ ${ARCH} == "aarch64" ]] || [[ ${ARCH} == "arm64" ]]; then \
+        echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
+        apk update && \
+        apk add --no-cache mono@community mono-dev@community; \
+    elif [[ ${ARCH} == "x86_64" ]] || [[ ${ARCH} == "amd64" ]]; then \
+        echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
+        apk update && \
+        apk add --no-cache mono@community mono-dev@community; \
+    else \
+        echo "ERROR: Unsupported architecture: ${ARCH}" && \
+        exit 1; \
+    fi && \
+    apk add --no-cache \
+        bash \
+        git wget zip \
+        g++ make curl \
+        bison flex boost-dev freeimage-dev \
+        bc util-linux graphicsmagick xxd python3 jq mesa-dev gettext-dev \
+        gettext-static \
+        musl-dev \
+        perl
 
 # Install runtime dependencies only
 RUN apk add --no-cache \
