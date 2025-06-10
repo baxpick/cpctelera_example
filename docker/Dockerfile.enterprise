@@ -5,6 +5,7 @@ FROM alpine:latest AS builder
 
 # Build argument - only available during docker build
 ARG FOLDER_ROOT
+ARG GIT_REF
 
 # Convert to ENV to make it available during RUN and in final container
 ENV MYTOOLS="${FOLDER_ROOT}/retro/projects/mytools"
@@ -39,8 +40,11 @@ RUN \
 
 # prepare cpctelera source for Enterprise
 RUN cd "${MYTOOLS}" && \
-    git clone -b enterprise-port https://github.com/baxpick/cpctelera-enterprise.git && \
-    rm -rf cpctelera-enterprise/.git && \
+    git clone --depth 1 -b enterprise-port https://github.com/baxpick/cpctelera-enterprise.git cpctelera-enterprise && \
+    cd cpctelera-enterprise && \
+    git checkout ${GIT_REF} && \
+    rm -rf .git && \
+    cd .. && \
     perl -i -p -e 's/.equ HARDWARE_CPC.*/.equ HARDWARE_CPC , 0/g' cpctelera-enterprise/cpctelera/CPCteleraHW.src && \
     perl -i -p -e 's/.equ HARDWARE_ENTERPRISE.*/.equ HARDWARE_ENTERPRISE , 1/g' cpctelera-enterprise/cpctelera/CPCteleraHW.src && \
     mv cpctelera-enterprise cpctelera-linux-enterprise
@@ -50,21 +54,20 @@ RUN cd "${MYTOOLS}/cpctelera-linux-enterprise" && \
     ./setup.sh
 
 # clean cpctelera
-# FIXXXME: !!! uncomment this
-# RUN for platform in enterprise; do \
-#     FOLDER_CPCTELERA="${MYTOOLS}/cpctelera-linux-${platform}"; \
-#     FOLDER_SDCC=$(find "${FOLDER_CPCTELERA}"/cpctelera/tools -name 'sdcc*' -type d -maxdepth 1); \
-#     find "${FOLDER_CPCTELERA}" -name 'obj' -type d -exec rm -rf {} \; ;\
-#     rm -rf "${FOLDER_CPCTELERA}"/examples; \
-#     rm -rf "${FOLDER_CPCTELERA}"/cpctelera/docs; \
-#     rm -rf "${FOLDER_SDCC}"/src; \
-#     cd "${FOLDER_SDCC}/share/sdcc/lib"; \
-#     find . -maxdepth 1 ! -name 'z80' ! -name '.' ! -name 'src' -exec rm -rf {} \; ;\
-#     cd "${FOLDER_SDCC}/share/sdcc/lib/src"; \
-#     find . -maxdepth 1 ! -name 'z80' ! -name '.' -type d -exec rm -rf {} \; ;\
-#     rm -rf "${FOLDER_CPCTELERA}"/cpctelera/tools/android; \
-#     rm -rf "${FOLDER_CPCTELERA}"/cpctelera/tools/img2cpc/lib; \
-# done
+RUN for platform in enterprise; do \
+    FOLDER_CPCTELERA="${MYTOOLS}/cpctelera-linux-${platform}"; \
+    FOLDER_SDCC=$(find "${FOLDER_CPCTELERA}"/cpctelera/tools -name 'sdcc*' -type d -maxdepth 1); \
+    find "${FOLDER_CPCTELERA}" -name 'obj' -type d -exec rm -rf {} \; ;\
+    rm -rf "${FOLDER_CPCTELERA}"/examples; \
+    rm -rf "${FOLDER_CPCTELERA}"/cpctelera/docs; \
+    rm -rf "${FOLDER_SDCC}"/src; \
+    cd "${FOLDER_SDCC}/share/sdcc/lib"; \
+    find . -maxdepth 1 ! -name 'z80' ! -name '.' ! -name 'src' -exec rm -rf {} \; ;\
+    cd "${FOLDER_SDCC}/share/sdcc/lib/src"; \
+    find . -maxdepth 1 ! -name 'z80' ! -name '.' -type d -exec rm -rf {} \; ;\
+    rm -rf "${FOLDER_CPCTELERA}"/cpctelera/tools/android; \
+    rm -rf "${FOLDER_CPCTELERA}"/cpctelera/tools/img2cpc/lib; \
+done
 
 # Build sjasm
 RUN cd /tmp && \
@@ -79,6 +82,7 @@ FROM alpine:latest
 
 # Build argument (only available during build)
 ARG FOLDER_ROOT
+ARG GIT_REF
 
 # Converting to ENV to make it available at runtime
 ENV FOLDER_PROJECTS="${FOLDER_ROOT}/retro/projects"
@@ -90,32 +94,6 @@ COPY --from=builder ${MYTOOLS}/cpctelera-linux-enterprise ${MYTOOLS}/cpctelera-l
 COPY --from=builder /tmp/sjasmplus/sjasmplus /usr/local/bin
 # Copy loader
 COPY enterprise/loader.asm ${FOLDER_PROJECTS}
-
-# FIXXXME: !!! remove this !!!
-# Install necessary packages (for cpctelera)
-RUN \
-    ARCH=$(arch) && \
-    if [[ ${ARCH} == "aarch64" ]] || [[ ${ARCH} == "arm64" ]]; then \
-        echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
-        apk update && \
-        apk add --no-cache mono@community mono-dev@community; \
-    elif [[ ${ARCH} == "x86_64" ]] || [[ ${ARCH} == "amd64" ]]; then \
-        echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
-        apk update && \
-        apk add --no-cache mono@community mono-dev@community; \
-    else \
-        echo "ERROR: Unsupported architecture: ${ARCH}" && \
-        exit 1; \
-    fi && \
-    apk add --no-cache \
-        bash \
-        git wget zip \
-        g++ make curl \
-        bison flex boost-dev freeimage-dev \
-        bc util-linux graphicsmagick xxd python3 jq mesa-dev gettext-dev \
-        gettext-static \
-        musl-dev \
-        perl
 
 # Install runtime dependencies only
 RUN apk add --no-cache \
