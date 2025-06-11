@@ -5,7 +5,7 @@ FROM alpine:latest AS builder
 
 # Build argument - only available during docker build
 ARG FOLDER_ROOT
-ARG GIT_REF
+ARG GIT_REF_enterprise
 
 # Convert to ENV to make it available during RUN and in final container
 ENV MYTOOLS="${FOLDER_ROOT}/retro/projects/mytools"
@@ -42,7 +42,7 @@ RUN \
 RUN cd "${MYTOOLS}" && \
     git clone --depth 1 -b enterprise-port https://github.com/baxpick/cpctelera-enterprise.git cpctelera-enterprise && \
     cd cpctelera-enterprise && \
-    git checkout ${GIT_REF} && \
+    git checkout ${GIT_REF_enterprise} && \
     rm -rf .git && \
     cd .. && \
     perl -i -p -e 's/.equ HARDWARE_CPC.*/.equ HARDWARE_CPC , 0/g' cpctelera-enterprise/cpctelera/CPCteleraHW.src && \
