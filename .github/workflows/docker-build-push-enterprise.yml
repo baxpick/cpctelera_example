@@ -16,6 +16,8 @@ on:
       - 'docker/build_cpctelera_project_from_container.sh'
       - 'docker/enterprise/**'
   workflow_dispatch: # Allows manual triggering
+  repository_dispatch:
+    types: [ enterprise-port-push ]
 
 jobs:
   build-and-push-enterprise:

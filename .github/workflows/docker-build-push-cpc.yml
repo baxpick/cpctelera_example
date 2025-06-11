@@ -15,6 +15,8 @@ on:
       - 'docker/entrypoint.sh'
       - 'docker/build_cpctelera_project_from_container.sh'
   workflow_dispatch: # Allows manual triggering
+  repository_dispatch:
+    types: [ enterprise-port-push ]
 
 jobs:
   build-and-push-cpc:
