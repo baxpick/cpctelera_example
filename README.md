@@ -1,10 +1,10 @@
-# CPCtelera Docker Build Environment
+# CPCtelera Container Build Environment
 
 ## Overview
 
-This repository provides a way to create a Docker-based build environment for [CPCtelera](https://github.com/lronaldo/cpctelera), a C development framework for the Amstrad CPC home computer.
+This repository provides a way to create a container based build environment for [CPCtelera](https://github.com/lronaldo/cpctelera), a C development framework for the Amstrad CPC home computer.
 
-The primary goal is to offer a consistent, isolated and minimal build environment that works across different host operating systems, including native support for both x86_64 (amd64) and aarch64 (arm64) architectures via a multi-architecture Docker image.
+The primary goal is to offer a consistent, isolated and minimal build environment that works across different host operating systems, including native support for both x86_64 (amd64) and aarch64 (arm64) architectures via a multi-architecture container image.
 
 ## Thanks
 
@@ -14,12 +14,12 @@ Special thanks go to Geco for providing Enterprise [port](https://github.com/bax
 
 ## Prerequisites
 
-*   [Docker](https://www.docker.com/get-started) must be installed and running on your system.
+*   [Docker](https://www.docker.com/get-started) or [Apple Container](https://github.com/apple/container) or equivalent must be installed and running on your system.
 *   Host machine with x86_64 (amd64) or aarch64 (arm64) architecture
 
-## Using the Pre-built Docker Image
+## Using the Pre-built Image
 
-A pre-built multi-architecture Docker image is available on DockerHub for [CPC](https://hub.docker.com/r/braxpix/cpctelera-build-cpc) and [Enterprise](https://hub.docker.com/r/braxpix/cpctelera-build-enterprise)
+A pre-built multi-architecture image is available on DockerHub for [CPC](https://hub.docker.com/r/braxpix/cpctelera-build-cpc) and [Enterprise](https://hub.docker.com/r/braxpix/cpctelera-build-enterprise)
 
 ### 1️⃣ Build project (from local folder) using default build script
 
@@ -40,7 +40,7 @@ You can customize/override some build parameters like changing project name, com
 
 ```
 ./build.sh --help
-Build cpctelera project in a Docker container.
+Build cpctelera project in a container.
   --folder-src                Path to source folder (where cpctelera project is: with Makefile, src/cfg folders, ...)
   --folder-output             Path to output folder (where you want the build output to be placed)
   --platform                  Platform (cpc|enterprise)
@@ -214,8 +214,8 @@ Note that you might need to adjust build config to comment out android part sinc
 
 ## Notes
 
-1. Some of runtime packages in docker image are needed for cpctelera projects but some are just convenient for me. Feel free to update this list to make your image smaller or to add packages needed for building your cpctelera project.
+1. Some of runtime packages in container image are needed for cpctelera projects but some are just convenient for me. Feel free to update this list to make your image smaller or to add packages needed for building your cpctelera project.
 
-2. `development` branch (at specific point in time) is used when cloning cpctelera (even different [repo](https://github.com/baxpick/cpctelera-enterprise/tree/enterprise-port) is used in case of Enterprise port) so if you need any other cpctelera repo/branch/commit do update Dockerfiles and re-create Docker images.
+2. `development` branch (at specific point in time) is used when cloning cpctelera (even different [repo](https://github.com/baxpick/cpctelera-enterprise/tree/enterprise-port) is used in case of Enterprise port) so if you need any other cpctelera repo/branch/commit do update Dockerfiles and re-create images.
 
 3. During building final image folder `cpctelera/tools/android` is removed to save space. If you need it, you must update Dockerfile and create your own image.
