@@ -24,7 +24,8 @@ abs_path() {
 
 usage() {
     echo "Usage: $0 [OPTIONS]"
-    echo "Build cpctelera project in a Docker container."
+    echo "Build cpctelera project in a container."
+    echo "  --container                 Platform (docker|container - default: docker)"
     echo "  --folder-src                Path to source folder (where cpctelera project is: with Makefile, src/cfg folders, ...)"
     echo "  --folder-output             Path to output folder (where you want the build output to be placed)"
     echo "  --platform                  Platform (cpc|enterprise)"
@@ -37,9 +38,14 @@ usage() {
 
 # default values for arguments
 BUILD_DEPLOY_EXTRA="false"
+CONTAINER="docker"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
+        --container)
+            CONTAINER="$2"
+            shift 2
+            ;;    
         --folder-src)
             FOLDER_SRC="$(abs_path "$2")"
             shift 2
@@ -82,6 +88,7 @@ done
 # ###
 
 echo "Building cpctelera project with the following parameters:"
+echo "  Container: '${CONTAINER}'"
 echo "  Source folder: '${FOLDER_SRC}'"
 echo "  Output folder: '${FOLDER_OUTPUT}'"
 echo "  Platform: '${PLATFORM}'"
@@ -89,12 +96,17 @@ echo "  Build deploy extra: '${BUILD_DEPLOY_EXTRA}'"
 echo "  Project name: '${BUILDCFG_PROJNAME}'"
 echo "  Z80 code location: '${BUILDCFG_Z80CODELOC}'"
 echo "  Z80 CFLAGS: '${BUILDCFG_Z80CCFLAGS}'"
-echo "  Docker image: 'braxpix/cpctelera-build-${PLATFORM}:latest'"
+echo "  Image: 'braxpix/cpctelera-build-${PLATFORM}:latest'"
 
 # Validate
 # ########
 
 # parameters
+if [[ "${CONTAINER}" != "docker" && "${CONTAINER}" != "container" ]]; then
+    echo "ERROR: Container parameter is wrong: '${CONTAINER}'"
+    exit 1
+fi
+
 if [[ ! -d "${FOLDER_SRC}" ]]; then
     echo "ERROR: Source folder does not exist: '${FOLDER_SRC}'"
     exit 1
@@ -131,19 +143,21 @@ fi
 
 IMAGE="braxpix/cpctelera-build-${PLATFORM}:latest"
 
-if ! command -v docker >/dev/null 2>&1; then
-    echo "ERROR: Docker is not installed or not in PATH."
+if ! command -v "${CONTAINER}" >/dev/null 2>&1; then
+    echo "ERROR: Container CLI '${CONTAINER}' is not installed or not in PATH."
     exit 1
 fi
 
-echo "Pulling Docker image '${IMAGE}'..."
-docker pull "${IMAGE}" >/dev/null 2>&1 || {
-    echo "ERROR: Failed to pull Docker image '${IMAGE}'."
-    exit 1
-}
-echo "Pulling Docker image '${IMAGE}' done successfully."
+if [[ "${CONTAINER}" == "docker" ]]; then
+    echo "Pulling image '${IMAGE}'..."
+    docker pull "${IMAGE}" >/dev/null 2>&1 || {
+        echo "ERROR: Failed to pull image '${IMAGE}'."
+        exit 1
+    }
+    echo "Pulling image '${IMAGE}' done successfully."
+fi
 
-docker run -it --rm \
+${CONTAINER} run -it --rm \
     -v "${FOLDER_SRC}":/mounted_project \
     -v "${FOLDER_OUTPUT}":/tmp/OUT:rw \
     \
