@@ -50,6 +50,7 @@ RUN cd "${MYTOOLS}" && \
     mv cpctelera-enterprise cpctelera-linux-enterprise
 
 # build cpctelera for ENTERPRISE
+RUN FILE_aslink_h=$(find . -name aslink.h) && [ "${FILE_aslink_h}" != "" ] && sed -i 's/extern[[:space:]]*VOID[[:space:]]*elf();/extern VOID elf(int i);/' ${FILE_aslink_h}
 RUN cd "${MYTOOLS}/cpctelera-linux-enterprise" && \
     ./setup.sh
 
