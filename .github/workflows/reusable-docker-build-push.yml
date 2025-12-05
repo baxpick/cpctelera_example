@@ -66,14 +66,14 @@ jobs:
       id: git_ref_enterprise
       run: |
         SHA=$(git ls-remote https://github.com/baxpick/cpctelera-enterprise.git enterprise-port | cut -f1)
-        echo "::set-output name=GIT_REF_enterprise::$SHA"
+        echo "GIT_REF_enterprise=$SHA" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Fetch cpctelera repo development branch commit SHA
       id: git_ref_cpc
       run: |
         SHA=$(git ls-remote https://github.com/lronaldo/cpctelera.git development | cut -f1)
-        echo "::set-output name=GIT_REF_cpc::$SHA"
+        echo "GIT_REF_cpc=$SHA" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Set up QEMU
