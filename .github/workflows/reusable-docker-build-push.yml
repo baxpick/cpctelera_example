@@ -62,20 +62,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Fetch cpctelera-enterprise repo enterprise-port branch commit SHA
-      id: git_ref_enterprise
-      run: |
-        SHA=$(git ls-remote https://github.com/baxpick/cpctelera-enterprise.git enterprise-port | cut -f1)
-        echo "GIT_REF_enterprise=$SHA" >> $GITHUB_OUTPUT
-      shell: bash
-
-    - name: Fetch cpctelera repo development branch commit SHA
-      id: git_ref_cpc
-      run: |
-        SHA=$(git ls-remote https://github.com/lronaldo/cpctelera.git development | cut -f1)
-        echo "GIT_REF_cpc=$SHA" >> $GITHUB_OUTPUT
-      shell: bash
-
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
 
@@ -99,10 +85,7 @@ jobs:
         tags: |
           ${{ inputs.image_name }}:${{ inputs.image_version }}
           ${{ inputs.image_name }}:latest
-        build-args: |
-          ${{ inputs.build_args }}
-          GIT_REF_enterprise=${{ steps.git_ref_enterprise.outputs.GIT_REF_enterprise }}
-          GIT_REF_cpc=${{ steps.git_ref_cpc.outputs.GIT_REF_cpc }}
+        build-args: ${{ inputs.build_args }}
         cache-from: type=gha,scope=${{ inputs.image_name }}
         cache-to: type=gha,scope=${{ inputs.image_name }},mode=max
 

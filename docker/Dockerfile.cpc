@@ -6,6 +6,8 @@ FROM alpine:latest AS builder
 # Build argument - only available during docker build
 ARG FOLDER_ROOT
 ARG GIT_REF_cpc
+ARG CPC_REPO_URL
+ARG CPC_REPO_BRANCH
 
 # Convert to ENV to make it available during RUN and in final container
 ENV MYTOOLS="${FOLDER_ROOT}/retro/projects/mytools"
@@ -41,7 +43,7 @@ RUN \
 
 # prepare cpctelera source for CPC
 RUN cd "${MYTOOLS}" && \
-    git clone --depth 1 -b development https://github.com/lronaldo/cpctelera.git cpctelera-cpc && \
+    git clone --depth 1 -b ${CPC_REPO_BRANCH} ${CPC_REPO_URL} cpctelera-cpc && \
     cd cpctelera-cpc && \
     git checkout ${GIT_REF_cpc} && \
     rm -rf .git && \

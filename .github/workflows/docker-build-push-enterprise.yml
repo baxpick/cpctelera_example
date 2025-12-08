@@ -20,14 +20,32 @@ on:
     types: [ enterprise-port-push ]
 
 jobs:
+  fetch-git-ref:
+    runs-on: ubuntu-latest
+    outputs:
+      git_ref_enterprise: ${{ steps.git_ref.outputs.GIT_REF_enterprise }}
+    steps:
+    - name: Fetch repo commit SHA
+      id: git_ref
+      run: |
+        REPO_URL="${{ vars.ENTERPRISE_REPO_URL }}"
+        BRANCH="${{ vars.ENTERPRISE_REPO_BRANCH }}"
+        SHA=$(git ls-remote "$REPO_URL" "$BRANCH" | cut -f1)
+        echo "GIT_REF_enterprise=$SHA" >> $GITHUB_OUTPUT
+      shell: bash
+
   build-and-push-enterprise:
+    needs: fetch-git-ref
     uses: ./.github/workflows/reusable-docker-build-push.yml
     with:
       dockerfile: ./docker/Dockerfile.enterprise
       image_name: braxpix/cpctelera-build-enterprise
-      image_version: 1.0
+      image_version: ${{ vars.ENTERPRISE_IMAGE_VERSION }}
       build_args: |
         FOLDER_ROOT=/build
+        GIT_REF_enterprise=${{ needs.fetch-git-ref.outputs.git_ref_enterprise }}
+        ENTERPRISE_REPO_URL=${{ vars.ENTERPRISE_REPO_URL }}
+        ENTERPRISE_REPO_BRANCH=${{ vars.ENTERPRISE_REPO_BRANCH }}
       acr_login_server: acrbaxosprod.azurecr.io
       acr_image_name: cpctelera-build-enterprise
     secrets:

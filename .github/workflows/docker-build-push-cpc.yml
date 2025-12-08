@@ -19,14 +19,32 @@ on:
     types: [ enterprise-port-push ]
 
 jobs:
+  fetch-git-ref:
+    runs-on: ubuntu-latest
+    outputs:
+      git_ref_cpc: ${{ steps.git_ref.outputs.GIT_REF_cpc }}
+    steps:
+    - name: Fetch repo commit SHA
+      id: git_ref
+      run: |
+        REPO_URL="${{ vars.CPC_REPO_URL }}"
+        BRANCH="${{ vars.CPC_REPO_BRANCH }}"
+        SHA=$(git ls-remote "$REPO_URL" "$BRANCH" | cut -f1)
+        echo "GIT_REF_cpc=$SHA" >> $GITHUB_OUTPUT
+      shell: bash
+
   build-and-push-cpc:
+    needs: fetch-git-ref
     uses: ./.github/workflows/reusable-docker-build-push.yml
     with:
       dockerfile: ./docker/Dockerfile.cpc
       image_name: braxpix/cpctelera-build-cpc
-      image_version: 1.0
+      image_version: ${{ vars.CPC_IMAGE_VERSION }}
       build_args: |
-        FOLDER_ROOT=/build      
+        FOLDER_ROOT=/build
+        GIT_REF_cpc=${{ needs.fetch-git-ref.outputs.git_ref_cpc }}
+        CPC_REPO_URL=${{ vars.CPC_REPO_URL }}
+        CPC_REPO_BRANCH=${{ vars.CPC_REPO_BRANCH }}
       acr_login_server: acrbaxosprod.azurecr.io
       acr_image_name: cpctelera-build-cpc
     secrets:
