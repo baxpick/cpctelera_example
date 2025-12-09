@@ -43,10 +43,7 @@ RUN \
 # prepare cpctelera source for Enterprise
 RUN cd "${MYTOOLS}" && \
     git clone --depth 1 -b ${ENTERPRISE_REPO_BRANCH} ${ENTERPRISE_REPO_URL} cpctelera-enterprise && \
-    cd cpctelera-enterprise && \
-    git checkout ${GIT_REF_enterprise} && \
-    rm -rf .git && \
-    cd .. && \
+    rm -rf cpctelera-enterprise/.git && \
     perl -i -p -e 's/.equ HARDWARE_CPC.*/.equ HARDWARE_CPC , 0/g' cpctelera-enterprise/cpctelera/CPCteleraHW.src && \
     perl -i -p -e 's/.equ HARDWARE_ENTERPRISE.*/.equ HARDWARE_ENTERPRISE , 1/g' cpctelera-enterprise/cpctelera/CPCteleraHW.src && \
     mv cpctelera-enterprise cpctelera-linux-enterprise

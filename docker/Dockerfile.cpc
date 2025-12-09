@@ -44,10 +44,7 @@ RUN \
 # prepare cpctelera source for CPC
 RUN cd "${MYTOOLS}" && \
     git clone --depth 1 -b ${CPC_REPO_BRANCH} ${CPC_REPO_URL} cpctelera-cpc && \
-    cd cpctelera-cpc && \
-    git checkout ${GIT_REF_cpc} && \
-    rm -rf .git && \
-    cd .. && \
+    rm -rf cpctelera-cpc/.git && \
     mv cpctelera-cpc cpctelera-linux-cpc
 
 # build cpctelera for CPC
