@@ -165,7 +165,7 @@ docker run -it --rm \
     -e PROJECT_GIT_REPO="https://USER:TOKEN@DOMAIN/SUFFIX" \
     -e BUILD_SCRIPT="/build/retro/projects/myProject/build_from_container.sh" \
     \
-    braxpix/cpctelera-build-cpc:latest
+    braxpix/cpctelera-build-cpc:development-latest
 ```
 
 ### 3️⃣ Build project (from local folder) using custom build script
@@ -187,7 +187,7 @@ docker run -it --rm \
     -e PROJECT_IS_ALREADY_HERE="/mounted_project" \
     -e BUILD_SCRIPT="/build/retro/projects/myProject/build.sh" \
     \
-    braxpix/cpctelera-build-cpc:latest
+    braxpix/cpctelera-build-cpc:development-latest
 ```
 
 ### 4️⃣ Execute cpctelera commands locally
@@ -195,7 +195,7 @@ docker run -it --rm \
 Create alias like this:
 
 ```bash
-alias cpct='docker run --rm -v $(pwd):/hostMachine -w /hostMachine braxpix/cpctelera-build-cpc:latest'
+alias cpct='docker run --rm -v $(pwd):/hostMachine -w /hostMachine braxpix/cpctelera-build-cpc:development-latest'
 ```
 
 Then, you can for example create cpctelera project:

@@ -25,10 +25,11 @@ abs_path() {
 usage() {
     echo "Usage: $0 [OPTIONS]"
     echo "Build cpctelera project in a container."
-    echo "  --container                 Platform (docker|container - default: docker)"
+    echo "  --container                 Container type (docker|container - default: docker)"
     echo "  --folder-src                Path to source folder (where cpctelera project is: with Makefile, src/cfg folders, ...)"
     echo "  --folder-output             Path to output folder (where you want the build output to be placed)"
     echo "  --platform                  Platform (cpc|enterprise)"
+    echo "  --image-version             Image version tag (development-latest|master-latest|...)"
     echo "  --build-deploy-extra ARG    (optional) (true|false - default: false) If set, deploy additional files for debug purpose mainly (e.g. object files)"
     echo "  --buildcfg-z80ccflags ARG   (optional) Additional CFLAGS (appends to build_config.mk variable Z80CCFLAGS)"
     echo "  --buildcfg-z80codeloc ARG   (optional) Memory location where binary should start (sets build_config.mk variable Z80CODELOC)"
@@ -39,6 +40,7 @@ usage() {
 # default values for arguments
 BUILD_DEPLOY_EXTRA="false"
 CONTAINER="docker"
+IMAGE_VERSION="development-latest"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -56,6 +58,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --platform)
             PLATFORM="$2"
+            shift 2
+            ;;
+        --image-version)
+            IMAGE_VERSION="$2"
             shift 2
             ;;
         --build-deploy-extra)
@@ -92,11 +98,12 @@ echo "  Container: '${CONTAINER}'"
 echo "  Source folder: '${FOLDER_SRC}'"
 echo "  Output folder: '${FOLDER_OUTPUT}'"
 echo "  Platform: '${PLATFORM}'"
+echo "  Image version: '${IMAGE_VERSION}'"
 echo "  Build deploy extra: '${BUILD_DEPLOY_EXTRA}'"
 echo "  Project name: '${BUILDCFG_PROJNAME}'"
 echo "  Z80 code location: '${BUILDCFG_Z80CODELOC}'"
 echo "  Z80 CFLAGS: '${BUILDCFG_Z80CCFLAGS}'"
-echo "  Image: 'braxpix/cpctelera-build-${PLATFORM}:latest'"
+echo "  Image: 'braxpix/cpctelera-build-${PLATFORM}:${IMAGE_VERSION}'"
 
 # Validate
 # ########
@@ -141,7 +148,7 @@ fi
 # Build
 # #####
 
-IMAGE="braxpix/cpctelera-build-${PLATFORM}:latest"
+IMAGE="braxpix/cpctelera-build-${PLATFORM}:${IMAGE_VERSION}"
 
 if ! command -v "${CONTAINER}" >/dev/null 2>&1; then
     echo "ERROR: Container CLI '${CONTAINER}' is not installed or not in PATH."

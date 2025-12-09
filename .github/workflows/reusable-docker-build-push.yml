@@ -84,7 +84,6 @@ jobs:
         push: true
         tags: |
           ${{ inputs.image_name }}:${{ inputs.image_version }}
-          ${{ inputs.image_name }}:latest
         build-args: ${{ inputs.build_args }}
         cache-from: type=gha,scope=${{ inputs.image_name }}
         cache-to: type=gha,scope=${{ inputs.image_name }},mode=max
@@ -96,8 +95,8 @@ jobs:
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
 
-    - name: Copy image to Azure Container Registry (version tag)
-      run: docker buildx imagetools create docker.io/${{ inputs.image_name }}@${{ steps.myImage.outputs.digest }} --tag ${{ inputs.acr_login_server }}/${{ inputs.acr_image_name }}:${{ inputs.image_version }}
-
-    - name: Copy image to Azure Container Registry (latest tag)
-      run: docker buildx imagetools create docker.io/${{ inputs.image_name }}@${{ steps.myImage.outputs.digest }} --tag ${{ inputs.acr_login_server }}/${{ inputs.acr_image_name }}:latest
+    - name: Copy image to ACR
+      run: |
+        docker buildx imagetools create \
+          --tag ${{ inputs.acr_login_server }}/${{ inputs.acr_image_name }}:${{ inputs.image_version }} \
+          docker.io/${{ inputs.image_name }}:${{ inputs.image_version }}
