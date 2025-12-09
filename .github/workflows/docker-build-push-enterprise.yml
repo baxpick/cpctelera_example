@@ -31,8 +31,10 @@ jobs:
         # Use JSON variable or default to single build config
         MATRIX='${{ vars.ENTERPRISE_BUILD_MATRIX }}'
         if [ -z "$MATRIX" ]; then
-          MATRIX='[{"repo_url":"https://github.com/baxpick/cpctelera-enterprise.git","branch":"enterprise-port","image_version":"enterprise-port"}]'
+          MATRIX='[{"repo_url":"https://github.com/baxpick/cpctelera-enterprise.git","branch":"enterprise-port","image_version":"development-latest"}]'
         fi
+        # Compact JSON to single line (remove newlines and extra spaces)
+        MATRIX=$(echo "$MATRIX" | jq -c .)
         echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
       shell: bash
 
