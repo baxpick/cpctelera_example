@@ -38,19 +38,6 @@ mkdir -p OUTPUT/ENTERPRISE
 
 You can customize/override some build parameters like changing project name, compiled binary location or adding C compiler flags.
 
-```
-./build.sh --help
-Build cpctelera project in a container.
-  --container                 Platform (docker|container - default: docker)
-  --folder-src                Path to source folder (where cpctelera project is: with Makefile, src/cfg folders, ...)
-  --folder-output             Path to output folder (where you want the build output to be placed)
-  --platform                  Platform (cpc|enterprise)
-  --build-deploy-extra ARG    (optional) (true|false - default: false) If set, deploy additional files for debug purpose mainly (e.g. object files)
-  --buildcfg-z80ccflags ARG   (optional) Additional CFLAGS (appends to build_config.mk variable Z80CCFLAGS)
-  --buildcfg-z80codeloc ARG   (optional) Memory location where binary should start (sets build_config.mk variable Z80CODELOC)
-  --buildcfg-z80ccflags ARG   (optional) Additional CFLAGS (appends to build_config.mk variable Z80CCFLAGS)
-```
-
 **Example 1: Amstrad CPC**
 
 Execute this to build `platformClimber` example for `Amstrad CPC` computer:
