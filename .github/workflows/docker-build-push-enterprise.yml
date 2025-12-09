@@ -20,32 +20,55 @@ on:
     types: [ enterprise-port-push ]
 
 jobs:
-  fetch-git-ref:
+  setup-matrix:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - name: Set up build matrix
+      id: set-matrix
+      run: |
+        # Use JSON variable or default to single build config
+        MATRIX='${{ vars.ENTERPRISE_BUILD_MATRIX }}'
+        if [ -z "$MATRIX" ]; then
+          MATRIX='[{"repo_url":"https://github.com/baxpick/cpctelera-enterprise.git","branch":"enterprise-port","image_version":"enterprise-port"}]'
+        fi
+        echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+      shell: bash
+
+  fetch-git-ref:
+    needs: setup-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        config: ${{ fromJson(needs.setup-matrix.outputs.matrix) }}
     outputs:
       git_ref_enterprise: ${{ steps.git_ref.outputs.GIT_REF_enterprise }}
     steps:
     - name: Fetch repo commit SHA
       id: git_ref
       run: |
-        REPO_URL="${{ vars.ENTERPRISE_REPO_URL }}"
-        BRANCH="${{ vars.ENTERPRISE_REPO_BRANCH }}"
-        SHA=$(git ls-remote "$REPO_URL" "$BRANCH" | cut -f1)
+        SHA=$(git ls-remote "${{ matrix.config.repo_url }}" "${{ matrix.config.branch }}" | cut -f1)
         echo "GIT_REF_enterprise=$SHA" >> $GITHUB_OUTPUT
       shell: bash
 
   build-and-push-enterprise:
-    needs: fetch-git-ref
+    needs: [setup-matrix, fetch-git-ref]
+    strategy:
+      fail-fast: false
+      matrix:
+        config: ${{ fromJson(needs.setup-matrix.outputs.matrix) }}
     uses: ./.github/workflows/reusable-docker-build-push.yml
     with:
       dockerfile: ./docker/Dockerfile.enterprise
       image_name: braxpix/cpctelera-build-enterprise
-      image_version: ${{ vars.ENTERPRISE_IMAGE_VERSION }}
+      image_version: ${{ matrix.config.image_version }}
       build_args: |
         FOLDER_ROOT=/build
         GIT_REF_enterprise=${{ needs.fetch-git-ref.outputs.git_ref_enterprise }}
-        ENTERPRISE_REPO_URL=${{ vars.ENTERPRISE_REPO_URL }}
-        ENTERPRISE_REPO_BRANCH=${{ vars.ENTERPRISE_REPO_BRANCH }}
+        ENTERPRISE_REPO_URL=${{ matrix.config.repo_url }}
+        ENTERPRISE_REPO_BRANCH=${{ matrix.config.branch }}
       acr_login_server: acrbaxosprod.azurecr.io
       acr_image_name: cpctelera-build-enterprise
     secrets:

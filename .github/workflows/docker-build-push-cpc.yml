@@ -19,32 +19,55 @@ on:
     types: [ enterprise-port-push ]
 
 jobs:
-  fetch-git-ref:
+  setup-matrix:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - name: Set up build matrix
+      id: set-matrix
+      run: |
+        # Use JSON variable or default to single build config
+        MATRIX='${{ vars.CPC_BUILD_MATRIX }}'
+        if [ -z "$MATRIX" ]; then
+          MATRIX='[{"repo_url":"https://github.com/lronaldo/cpctelera.git","branch":"development","image_version":"development"}]'
+        fi
+        echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+      shell: bash
+
+  fetch-git-ref:
+    needs: setup-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        config: ${{ fromJson(needs.setup-matrix.outputs.matrix) }}
     outputs:
       git_ref_cpc: ${{ steps.git_ref.outputs.GIT_REF_cpc }}
     steps:
     - name: Fetch repo commit SHA
       id: git_ref
       run: |
-        REPO_URL="${{ vars.CPC_REPO_URL }}"
-        BRANCH="${{ vars.CPC_REPO_BRANCH }}"
-        SHA=$(git ls-remote "$REPO_URL" "$BRANCH" | cut -f1)
+        SHA=$(git ls-remote "${{ matrix.config.repo_url }}" "${{ matrix.config.branch }}" | cut -f1)
         echo "GIT_REF_cpc=$SHA" >> $GITHUB_OUTPUT
       shell: bash
 
   build-and-push-cpc:
-    needs: fetch-git-ref
+    needs: [setup-matrix, fetch-git-ref]
+    strategy:
+      fail-fast: false
+      matrix:
+        config: ${{ fromJson(needs.setup-matrix.outputs.matrix) }}
     uses: ./.github/workflows/reusable-docker-build-push.yml
     with:
       dockerfile: ./docker/Dockerfile.cpc
       image_name: braxpix/cpctelera-build-cpc
-      image_version: ${{ vars.CPC_IMAGE_VERSION }}
+      image_version: ${{ matrix.config.image_version }}
       build_args: |
         FOLDER_ROOT=/build
         GIT_REF_cpc=${{ needs.fetch-git-ref.outputs.git_ref_cpc }}
-        CPC_REPO_URL=${{ vars.CPC_REPO_URL }}
-        CPC_REPO_BRANCH=${{ vars.CPC_REPO_BRANCH }}
+        CPC_REPO_URL=${{ matrix.config.repo_url }}
+        CPC_REPO_BRANCH=${{ matrix.config.branch }}
       acr_login_server: acrbaxosprod.azurecr.io
       acr_image_name: cpctelera-build-cpc
     secrets:
