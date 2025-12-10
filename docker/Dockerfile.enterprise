@@ -57,16 +57,16 @@ RUN cd "${MYTOOLS}/cpctelera-linux-enterprise" && \
 ENV FOLDER_CPCTELERA="${MYTOOLS}/cpctelera-linux-enterprise"
 RUN FOLDER_SDCC=$(find "${FOLDER_CPCTELERA}"/cpctelera/tools -name 'sdcc*' -type d -maxdepth 1) && \
     echo "FOLDER_SDCC=${FOLDER_SDCC}" >> /tmp/environment
-RUN find "${FOLDER_CPCTELERA}" -name 'obj' -type d -exec rm -rf {} \; || true
+RUN find "${FOLDER_CPCTELERA}" -name 'obj' -type d -exec rm -rf {} \; 2>/dev/null || true
 RUN rm -rf "${FOLDER_CPCTELERA}"/examples
 RUN rm -rf "${FOLDER_CPCTELERA}"/cpctelera/docs
 RUN . /tmp/environment && rm -rf "${FOLDER_SDCC}"/src
 RUN . /tmp/environment && cd "${FOLDER_SDCC}/share/sdcc/lib" && \
-    find . -maxdepth 1 ! -name 'z80' ! -name '.' ! -name 'src' -exec rm -rf {} \; || true
+    find . -maxdepth 1 ! -name 'z80' ! -name '.' ! -name 'src' -exec rm -rf {} \; 2>/dev/null || true
 RUN . /tmp/environment && cd "${FOLDER_SDCC}/share/sdcc/lib/src" && \
-    find . -maxdepth 1 ! -name 'z80' ! -name '.' -type d -exec rm -rf {} \; || true
-RUN rm -rf "${FOLDER_CPCTELERA}"/cpctelera/tools/android
-RUN rm -rf "${FOLDER_CPCTELERA}"/cpctelera/tools/img2cpc/lib
+    find . -maxdepth 1 ! -name 'z80' ! -name '.' -type d -exec rm -rf {} \; 2>/dev/null || true
+RUN rm -rf "${FOLDER_CPCTELERA}"/cpctelera/tools/android 2>/dev/null  || true
+RUN rm -rf "${FOLDER_CPCTELERA}"/cpctelera/tools/img2cpc/lib 2>/dev/null || true
 
 # Build sjasm
 RUN cd /tmp && \
