@@ -67,7 +67,6 @@ jobs:
       image_name: braxpix/cpctelera-build-enterprise
       image_version: ${{ matrix.config.image_version }}
       build_args: |
-        FOLDER_ROOT=/build
         GIT_REF_enterprise=${{ needs.fetch-git-ref.outputs.git_ref_enterprise }}
         ENTERPRISE_REPO_URL=${{ matrix.config.repo_url }}
         ENTERPRISE_REPO_BRANCH=${{ matrix.config.branch }}

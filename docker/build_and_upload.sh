@@ -16,7 +16,7 @@ echo "Docker Hub login successful."
 
 echo "Building Docker image..."
 FULL_IMAGE="braxpix/cpctelera-build-$(arch)-cpc:1.0"
-docker build -f Dockerfile.cpc --build-arg FOLDER_ROOT="/build" -t ${FULL_IMAGE} .
+docker build -f Dockerfile.cpc -t ${FULL_IMAGE} .
 if [[ $? -ne 0 ]]; then
   echo "Error: Docker image build failed."
   exit 1

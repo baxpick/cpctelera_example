@@ -4,13 +4,12 @@
 FROM alpine:latest AS builder
 
 # Build argument - only available during docker build
-ARG FOLDER_ROOT
 ARG GIT_REF_cpc
 ARG CPC_REPO_URL
 ARG CPC_REPO_BRANCH
 
 # Convert to ENV to make it available during RUN and in final container
-ENV MYTOOLS="${FOLDER_ROOT}/retro/projects/mytools"
+ENV MYTOOLS="/build/retro/projects/mytools"
 
 # Ensure the directory exists
 RUN mkdir -p "${MYTOOLS}"
@@ -72,11 +71,8 @@ RUN rm -rf "${FOLDER_CPCTELERA}"/cpctelera/tools/img2cpc/lib 2>/dev/null || true
 
 FROM alpine:latest
 
-# Build argument (only available during build)
-ARG FOLDER_ROOT
-
 # Converting to ENV to make it available at runtime
-ENV FOLDER_PROJECTS="${FOLDER_ROOT}/retro/projects"
+ENV FOLDER_PROJECTS="/build/retro/projects"
 ENV MYTOOLS="${FOLDER_PROJECTS}/mytools"
 
 # Copy only required folders from builder

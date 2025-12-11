@@ -66,7 +66,6 @@ jobs:
       image_name: braxpix/cpctelera-build-cpc
       image_version: ${{ matrix.config.image_version }}
       build_args: |
-        FOLDER_ROOT=/build
         GIT_REF_cpc=${{ needs.fetch-git-ref.outputs.git_ref_cpc }}
         CPC_REPO_URL=${{ matrix.config.repo_url }}
         CPC_REPO_BRANCH=${{ matrix.config.branch }}
