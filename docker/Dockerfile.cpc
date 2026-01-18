@@ -4,7 +4,6 @@
 FROM alpine:latest AS builder
 
 # Build argument - only available during docker build
-ARG GIT_REF_cpc
 ARG CPC_REPO_URL
 ARG CPC_REPO_BRANCH
 
@@ -13,6 +12,11 @@ ENV MYTOOLS="/build/retro/projects/mytools"
 
 # Ensure the directory exists
 RUN mkdir -p "${MYTOOLS}"
+
+# Fetch current commit SHA for caching/transparency
+RUN apk add --no-cache git && \
+    GIT_REF_cpc=$(git ls-remote ${CPC_REPO_URL} ${CPC_REPO_BRANCH} | cut -f1) && \
+    echo "Building from ${CPC_REPO_URL} branch ${CPC_REPO_BRANCH} at commit ${GIT_REF_cpc}"
 
 # Install necessary packages (for cpctelera)
 RUN \

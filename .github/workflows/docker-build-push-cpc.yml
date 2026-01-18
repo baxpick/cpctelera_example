@@ -37,25 +37,8 @@ jobs:
         echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
       shell: bash
 
-  fetch-git-ref:
-    needs: setup-matrix
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        config: ${{ fromJson(needs.setup-matrix.outputs.matrix) }}
-    outputs:
-      git_ref_cpc: ${{ steps.git_ref.outputs.GIT_REF_cpc }}
-    steps:
-    - name: Fetch repo commit SHA
-      id: git_ref
-      run: |
-        SHA=$(git ls-remote "${{ matrix.config.repo_url }}" "${{ matrix.config.branch }}" | cut -f1)
-        echo "GIT_REF_cpc=$SHA" >> $GITHUB_OUTPUT
-      shell: bash
-
   build-and-push-cpc:
-    needs: [setup-matrix, fetch-git-ref]
+    needs: setup-matrix
     strategy:
       fail-fast: false
       matrix:
@@ -66,7 +49,6 @@ jobs:
       image_name: braxpix/cpctelera-build-cpc
       image_version: ${{ matrix.config.image_version }}
       build_args: |
-        GIT_REF_cpc=${{ needs.fetch-git-ref.outputs.git_ref_cpc }}
         CPC_REPO_URL=${{ matrix.config.repo_url }}
         CPC_REPO_BRANCH=${{ matrix.config.branch }}
       acr_login_server: acrbaxosprod.azurecr.io
