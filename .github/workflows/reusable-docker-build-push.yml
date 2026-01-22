@@ -74,7 +74,14 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-    - name: Build and push multi-arch image to Docker Hub
+    - name: Log in to Azure Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ inputs.acr_login_server }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Build and push multi-arch image to both registries
       id: myImage
       uses: docker/build-push-action@v5
       with:
@@ -84,19 +91,7 @@ jobs:
         push: true
         tags: |
           ${{ inputs.image_name }}:${{ inputs.image_version }}
+          ${{ inputs.acr_login_server }}/${{ inputs.acr_image_name }}:${{ inputs.image_version }}
         build-args: ${{ inputs.build_args }}
         cache-from: type=gha,scope=${{ inputs.image_name }}-${{ inputs.image_version }}
         cache-to: type=gha,scope=${{ inputs.image_name }}-${{ inputs.image_version }},mode=max
-
-    - name: Log in to Azure Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ inputs.acr_login_server }}
-        username: ${{ secrets.ACR_USERNAME }}
-        password: ${{ secrets.ACR_PASSWORD }}
-
-    - name: Copy image to ACR
-      run: |
-        docker buildx imagetools create \
-          --tag ${{ inputs.acr_login_server }}/${{ inputs.acr_image_name }}:${{ inputs.image_version }} \
-          docker.io/${{ inputs.image_name }}:${{ inputs.image_version }}
