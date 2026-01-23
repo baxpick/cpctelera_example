@@ -56,5 +56,5 @@ jobs:
     secrets:
       DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
       DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
-      ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
-      ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+      ACR_USERNAME: ${{ secrets.TF_VAR_ACR_USERNAME }}
+      ACR_PASSWORD: ${{ secrets.TF_VAR_ACR_PASSWORD }}
