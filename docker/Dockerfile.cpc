@@ -36,7 +36,7 @@ RUN \
     apk add --no-cache \
         bash \
         git wget zip \
-        g++ make curl \
+        g++ clang make curl \
         bison flex boost-dev freeimage-dev \
         bc util-linux graphicsmagick xxd python3 jq mesa-dev gettext-dev \
         patch \
