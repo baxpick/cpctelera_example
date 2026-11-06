@@ -51,9 +51,18 @@ RUN cd "${MYTOOLS}" && \
     mv cpctelera-cpc cpctelera-linux-cpc
 
 # build cpctelera for CPC
+# Use Alpine's native FreeImage library instead of the bundled GNU/Linux archive.
+RUN IMG2CPC_MAKEFILE="${MYTOOLS}/cpctelera-linux-cpc/cpctelera/tools/img2cpc/Makefile.others" && \
+    if [ -f "${IMG2CPC_MAKEFILE}" ]; then \
+        sed -i 's/-l:libfreeimagegnu\.a/-lfreeimage/g' "${IMG2CPC_MAKEFILE}"; \
+    fi
 RUN FILE_aslink_h=$(find . -name aslink.h) && [ "${FILE_aslink_h}" != "" ] && sed -i 's/extern[[:space:]]*VOID[[:space:]]*elf();/extern VOID elf(int i);/' ${FILE_aslink_h}
 RUN cd "${MYTOOLS}/cpctelera-linux-cpc" && \
-    ./setup.sh
+    ./setup.sh --disable-machine-echo || { \
+        setup_status=$?; \
+        tail -n 200 cpctelera/logs/*.log; \
+        exit "${setup_status}"; \
+    }
 
 # clean cpctelera
 ENV FOLDER_CPCTELERA="${MYTOOLS}/cpctelera-linux-cpc"
